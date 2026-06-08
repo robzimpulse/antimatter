@@ -1,0 +1,39 @@
+name: Android CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: gradle
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x antimatter_app/gradlew
+
+    - name: Run Android Lint
+      run: cd antimatter_app && ./gradlew lintFossDebug
+
+    - name: Run Unit Tests
+      run: cd antimatter_app && ./gradlew testFossDebugUnitTest
+
+    - name: Build Debug APK
+      run: cd antimatter_app && ./gradlew assembleFossDebug
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-debug
+        path: antimatter_app/app/build/outputs/apk/foss/debug/app-foss-debug.apk

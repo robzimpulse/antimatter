@@ -1,0 +1,42 @@
+name: Extension CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+        cache-dependency-path: antimatter_extension/package-lock.json
+
+    - name: Install dependencies
+      run: cd antimatter_extension && npm ci
+
+    - name: Run ESLint
+      run: cd antimatter_extension && npm run lint
+
+    - name: Type Check
+      run: cd antimatter_extension && npm run build --if-present
+
+    - name: Package VSIX
+      run: |
+        cd antimatter_extension
+        npm install -g @vscode/vsce
+        vsce package
+    
+    - name: Upload VSIX
+      uses: actions/upload-artifact@v4
+      with:
+        name: antimatter-extension
+        path: antimatter_extension/*.vsix

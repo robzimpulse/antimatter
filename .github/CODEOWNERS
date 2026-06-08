@@ -1,0 +1,15 @@
+# This file maps project files/directories to specific reviewers.
+# See https://help.github.com/articles/about-codeowners/ for details.
+
+# Global owners for the entire repository
+* @saifmukhtar
+
+# Android App (Kotlin/Compose)
+/antimatter_app/ @saifmukhtar
+
+# VS Code Extension Bridge (Node.js/TypeScript)
+/antimatter_extension/ @saifmukhtar
+
+# Security & Policies
+/SECURITY.md @saifmukhtar
+/CODE_OF_CONDUCT.md @saifmukhtar

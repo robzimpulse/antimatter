@@ -1,7 +1,7 @@
 # Antimatter Bridge (VS Code Extension)
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/saifmukhtar/antimatter/main/antimatter_extension/icon.png" width="128" alt="Antimatter Logo">
+  <img src="https://raw.githubusercontent.com/saifmukhtar/antimatter/main/extension/icon.png" width="128" alt="Antimatter Logo">
 </p>
 
 **Antimatter** is an ecosystem that bridges your live **Google AntiGravity IDE** session to a companion mobile app.
@@ -12,10 +12,11 @@
 This extension runs a local WebSocket server and file watcher. It tails the `transcript.jsonl` output of your active AntiGravity agent and broadcasts the trajectory (thoughts, tool calls, and outputs) to your mobile device in real-time. It also injects prompt commands back into your agent via native VS Code API hooks (`vscode.commands.executeCommand`).
 
 ## Features
+- **Remote Terminal Hosting**: Securely proxy shell commands from your phone to `child_process.spawn`.
 - **Real-Time Agent Mirroring**: See what your AI is doing on your phone.
 - **Remote Control**: Send chat messages directly to your agent from your phone.
 - **Diff Accept/Reject**: Review file edits directly from your phone and accept/reject them.
-- **Enterprise Security**: All connections require a 256-bit Bearer Token. Strict Origin validation prevents Cross-Site WebSocket Hijacking (CSWSH).
+- **Enterprise Security**: All connections require a 256-bit Pairing Token and an Ed25519 Handshake. Strict Origin validation prevents Cross-Site WebSocket Hijacking (CSWSH).
 - **Cloudflare Zero Trust**: Natively supports authenticated remote routing via `cloudflared`.
 
 ## How to Connect

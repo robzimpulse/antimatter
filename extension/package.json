@@ -2,7 +2,7 @@
   "name": "antimatter",
   "displayName": "Antimatter",
   "description": "Bridges your live Antigravity IDE session to your Android Antimatter app over WebSocket.",
-  "version": "0.1.7",
+  "version": "1.0.0",
   "license": "MIT",
   "author": "Saif Mukhtar",
   "homepage": "https://saifmukhtar.dev",
@@ -23,7 +23,9 @@
     "type": "git",
     "url": "https://github.com/saifmukhtar/antimatter.git"
   },
-  "activationEvents": [],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
@@ -46,6 +48,10 @@
       {
         "command": "antimatter.setCloudflareCredentials",
         "title": "Antimatter: Set Cloudflare Credentials"
+      },
+      {
+        "command": "antimatter.restartTunnel",
+        "title": "Antimatter: Restart Cloudflare Tunnel"
       }
     ],
     "configuration": {
@@ -65,6 +71,11 @@
           "type": "string",
           "default": "",
           "description": "Designated Cloudflare Zero Trust hostname (e.g. ide.mydomain.com)"
+        },
+        "antimatter.cloudflareClientId": {
+          "type": "string",
+          "default": "",
+          "description": "Cloudflare Zero Trust Access Client ID"
         }
       }
     }
@@ -73,7 +84,6 @@
     "build": "node build.mjs",
     "watch": "node build.mjs --watch",
     "package": "vsce package",
-    "release": "bash ./scripts/build-release.sh",
     "lint": "tsc --noEmit"
   },
   "devDependencies": {

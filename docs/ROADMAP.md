@@ -1,30 +1,60 @@
-# Antimatter IDE Roadmap
+# Roadmap
 
-This document outlines the planned future features and architectural improvements for the Antimatter IDE (Android App & VS Code Extension).
+Planned features and architectural improvements for the Antimatter ecosystem. Items are prioritized by security first, then core functionality, then quality-of-life.
 
-## 🔒 Security & Privacy
+!!! info "Want to help?"
+    Many of these items are great first contributions. Check the [Contributing Guide](CONTRIBUTING.md) to get started.
 
-### End-to-End Encryption (E2EE)
-**Status:** Planned
-Currently, the WebSocket connection is secured by TLS (via Cloudflare) and an auto-generated 256-bit Pairing Token, with an Ed25519 cryptographic handshake to prevent Man-in-the-Middle attacks. 
-However, to ensure absolute privacy even from tunnel providers (like Cloudflare), we plan to implement true End-to-End Encryption (E2EE) using a Diffie-Hellman key exchange. 
-- Traffic will be encrypted *before* leaving the VS Code extension.
-- It will only be decrypted locally on the Android device.
-- Ensures Zero-Knowledge routing through any intermediary proxy or tunnel.
+---
 
-## 💻 Core Features
+## :material-shield-lock: Security & Privacy
 
-### Advanced Terminal Integration
-**Status:** Planned
-The current terminal implementation uses a basic Node.js `child_process.spawn` to proxy shell commands over the WebSocket. 
-The future goal is to implement a fully featured, isolated terminal environment:
-- **Pseudo-Terminal (PTY) Support:** Use `node-pty` to provide a true TTY environment, allowing for interactive commands (like `nano`, `vim`, `htop`, or interactive prompts).
-- **Sandboxing & Isolation:** Explore options to restrict the terminal session strictly to the workspace directory to prevent accidental global system modifications.
-- **ANSI Escape Code Rendering:** Implement a fully compliant Xterm.js-style renderer in Jetpack Compose to correctly display colored output, cursor movements, and complex terminal UI layouts.
+### :material-lock: End-to-End Encryption (E2EE)
 
-### Remote Workspace Switching
-**Status:** Under Consideration / Long-term
-Allowing the user to browse and switch the active VS Code workspace directly from the Android App.
-- **The Need:** Sometimes you need to jump to a different project/workspace while on the go, without returning to the physical host machine.
-- **Security Implications:** This is highly sensitive. Granting the companion app the ability to navigate the host file system and open new directories vastly expands the attack surface. 
-- **Planned Approach:** If implemented, this feature will require an extremely strict security model (e.g., pre-approved workspace whitelists, secondary biometric confirmations, or restricted filesystem read access) to ensure a compromised pairing token cannot be used to arbitrarily browse the host OS.
+**Status:** :material-clock-outline: Planned
+
+Currently, the WebSocket connection is secured by TLS (via Cloudflare) and a 256-bit pairing token with Ed25519 handshake. However, to ensure **absolute privacy even from tunnel providers**, we plan to implement true E2EE using a Diffie-Hellman key exchange:
+
+- Traffic encrypted *before* leaving the VS Code extension
+- Decrypted only on the Android device
+- **Zero-knowledge routing** through any intermediary (Cloudflare, proxies, etc.)
+
+---
+
+## :material-rocket-launch: Core Features
+
+### :material-console-line: Advanced Terminal Integration
+
+**Status:** :material-clock-outline: Planned
+
+The current terminal uses `child_process.spawn` to proxy commands. The future goal is a fully featured, isolated terminal:
+
+| Feature | Description |
+|---------|-------------|
+| **PTY support** | Use `node-pty` for a true TTY environment — interactive commands like `vim`, `htop`, and prompts |
+| **Sandboxing** | Restrict terminal sessions to the workspace directory to prevent accidental global changes |
+| **ANSI rendering** | Xterm.js-style renderer in Jetpack Compose for colored output, cursor movements, and complex TUI layouts |
+
+### :material-swap-horizontal: Remote Workspace Switching
+
+**Status:** :material-thought-bubble: Under consideration (long-term)
+
+Allow users to browse and switch the active VS Code workspace from the Android app.
+
+!!! warning "Security implications"
+    Granting the companion app filesystem navigation vastly expands the attack surface. If implemented, this will require:
+
+    - Pre-approved workspace whitelists
+    - Secondary biometric confirmations
+    - Restricted filesystem read access
+
+---
+
+## :material-timeline-check: Status Legend
+
+| Icon | Meaning |
+|------|---------|
+| :material-check-circle: | Shipped |
+| :material-progress-wrench: | In progress |
+| :material-clock-outline: | Planned |
+| :material-thought-bubble: | Under consideration |

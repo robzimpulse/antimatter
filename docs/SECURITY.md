@@ -1,37 +1,119 @@
 # Security Policy
 
-Operating a remote-control interface for an IDE with terminal access demands enterprise-grade security. The Antimatter project takes the security of your host development environment extremely seriously.
+Operating a remote-control interface for an IDE with terminal access demands enterprise-grade security. The Antimatter project takes the security of your host development environment **extremely seriously**.
 
-## Supported Versions
-Currently, only the `main` branch and the latest published GitHub Release are supported with security updates.
-
-## Reporting a Vulnerability
-If you discover a security vulnerability within Antimatter, please do **NOT** open a public issue. Instead, send an email directly to the maintainers or use GitHub's private vulnerability reporting feature.
+!!! danger "Reporting a vulnerability"
+    If you discover a security vulnerability, please do **NOT** open a public issue. Instead, use [GitHub's private vulnerability reporting](https://github.com/saifmukhtar/antimatter/security/advisories/new) or email the maintainers directly.
 
 ---
 
-## Implemented Security Mechanisms
+## :material-check-decagram: Supported Versions
 
-Because Antimatter exposes a local WebSocket server, we have implemented several critical security safeguards to prevent unauthorized access and remote code execution.
+| Version | Supported |
+|---------|-----------|
+| `main` branch | :material-check: |
+| Latest GitHub Release | :material-check: |
+| Older releases | :material-close: |
 
-### 1. Bearer Token & Ed25519 Authentication
-By default, the WebSocket server does **not** allow unauthenticated connections.
-- Upon initialization, the VS Code extension generates a cryptographically secure, high-entropy 256-bit Bearer Token using Node's `crypto.randomBytes()`. This provides mathematical equivalence to AES-256 encryption.
-- The extension rejects any incoming HTTP upgrade request that does not present this exact token, making brute-force attacks impossible.
-- Furthermore, the server proves its identity to the client using an **Ed25519 Cryptographic Handshake**, ensuring absolute protection against Man-in-the-Middle (MITM) attacks and server spoofing.
-- The token is securely transmitted to the Android client via a local QR code pairing mechanism.
+---
 
-### 2. Local Biometric Security
-While network traffic is heavily protected, physical access to your mobile device is protected locally. Sensitive features—such as the **Remote Terminal**—are locked behind Android's `androidx.biometric` API. The remote terminal proxy will *only* establish a session if you successfully authenticate with a Fingerprint or Face Unlock, ensuring that if your phone is left unlocked on a desk, an unauthorized person cannot execute host commands.
+## :material-shield-check: Security Mechanisms
 
-### 2. Origin Header Validation
-To protect against **Cross-Site WebSocket Hijacking (CSWSH)**, the extension enforces strict `Origin` header validation. Malicious websites running in your browser cannot silently initiate a connection to `ws://localhost:8765` to hijack your IDE.
+Because Antimatter exposes a local WebSocket server that can proxy terminal commands, we implement **multiple overlapping security layers** so that compromising any single layer is not sufficient for an attacker to gain access.
 
-### 3. Path Normalization & Sandboxing
-The Android client has the ability to request file tree data and file contents. To prevent **Local File Arbitrary Read** vulnerabilities (e.g., requesting `../../../../etc/passwd`), the extension strictly sanitizes and normalizes all incoming file paths. Reads are sandboxed to the active workspace or the `.gemini/antigravity-ide` directory.
+### :material-numeric-1-circle: 256-bit Bearer Token + Ed25519 Handshake
 
-### 4. Denial of Service (DoS) Mitigation
-The extension employs a strict **Token Bucket Rate Limiting** algorithm. This prevents an attacker (or a runaway bug in the Android client) from flooding the WebSocket with thousands of payloads per second, which would exhaust the host machine's memory buffer and crash the IDE.
+<div class="step-card" markdown>
 
-### 5. Secure Tunnels (Cloudflare Zero Trust)
-We actively discourage the use of unencrypted, public third-party tunnels (like Localtunnel) due to Man-in-the-Middle (MITM) interception risks. Antimatter natively supports **Cloudflare Zero Trust (`cloudflared`)**, allowing you to route traffic over an encrypted tunnel protected by OAuth identity verification.
+**Token generation:** On first run, the extension generates a 256-bit Bearer Token with `crypto.randomBytes(32)` — equivalent entropy to AES-256. Stored in VS Code `SecretStorage` (OS keychain), never written to plain settings.
+
+**Token verification:** Every WebSocket connection must present this token. The server checks it with `crypto.timingSafeEqual` — immune to timing side-channel attacks. Invalid tokens → close code `4001 Unauthorized`.
+
+**Ed25519 handshake:** After the token check, the client sends an `AUTH_CHALLENGE` nonce. The bridge signs it with its persistent Ed25519 private key and returns `AUTH_RESPONSE`. The client verifies the signature against the public key received during QR pairing — this proves the bridge's identity and prevents Man-in-the-Middle attacks.
+
+</div>
+
+!!! info "Full details"
+    See the [WebSocket Protocol Reference](PROTOCOL.md) for the complete handshake flow, message fields, and close codes.
+
+### :material-numeric-2-circle: Biometric Lock (Physical Security)
+
+<div class="step-card" markdown>
+
+The Android app gates sensitive features — particularly the **Remote Terminal** — behind Android's `androidx.biometric` API. The terminal proxy **only** opens after successful fingerprint or face unlock.
+
+Even if your phone is left unlocked on a desk, an unauthorized person cannot execute host commands without passing the biometric check.
+
+</div>
+
+### :material-numeric-3-circle: Origin Header Validation (CSWSH Protection)
+
+<div class="step-card" markdown>
+
+To protect against **Cross-Site WebSocket Hijacking (CSWSH)**, the bridge enforces strict `Origin` header validation. Only these origins are accepted:
+
+- `vscode-webview://…` (the extension's own webview)
+- `https://<team>.cloudflareaccess.com` (Cloudflare Access)
+
+Malicious websites in your browser **cannot** silently connect to `ws://localhost:8765`.
+
+</div>
+
+### :material-numeric-4-circle: Path Normalization & Sandboxing
+
+<div class="step-card" markdown>
+
+The app can request file tree data and file contents. To prevent **Local File Arbitrary Read** vulnerabilities (e.g. `../../../../etc/passwd`), the extension strictly sanitizes and normalizes all incoming file paths. Reads are sandboxed to:
+
+- The active VS Code workspace
+- The `.gemini/antigravity-ide` directory
+
+Path traversal attempts are rejected before reaching the filesystem.
+
+</div>
+
+### :material-numeric-5-circle: Rate Limiting (DoS Mitigation)
+
+<div class="step-card" markdown>
+
+The extension implements **per-IP rate limiting**:
+
+- **5 failed token attempts** → IP banned for **60 seconds** (close code `4000 Rate Limited`)
+- Prevents connection-flood attacks that could exhaust host memory and crash the IDE
+
+</div>
+
+### :material-numeric-6-circle: Secure Tunnels (Cloudflare)
+
+<div class="step-card" markdown>
+
+We actively discourage unencrypted public tunnels. Antimatter natively supports:
+
+- **Cloudflare Quick Tunnels** — free, auto-provisioned, TLS-encrypted
+- **Cloudflare Zero Trust** — persistent hostname, OAuth/SAML access policies, service auth
+
+The WebSocket server binds exclusively to `127.0.0.1` — it is **never** directly accessible from the network. Only Cloudflare's tunnel connector can reach it.
+
+</div>
+
+---
+
+## :material-layers-triple: Defense-in-Depth Summary
+
+| Layer | Protects against | Mechanism |
+|-------|-----------------|-----------|
+| TLS (Cloudflare) | Network eavesdropping | End-to-end encryption between app ↔ Cloudflare edge |
+| Bearer token | Unauthorized connections | 256-bit random token, timing-safe comparison |
+| Ed25519 handshake | MITM / server spoofing | Cryptographic identity proof |
+| Origin validation | CSWSH attacks | Strict allow-list of Origins |
+| Rate limiting | Brute-force / DoS | Per-IP token failure tracking + ban |
+| Biometric lock | Physical device theft | Fingerprint/face required for terminal |
+| Path sandboxing | Arbitrary file read | Normalize + restrict to workspace |
+| Localhost binding | LAN snooping | Server only on `127.0.0.1` |
+
+---
+
+## :material-arrow-right-bold: Related
+
+- [**Zero Trust Guide**](ZERO_TRUST.md) — setting up Cloudflare Access for double-layered security
+- [**WebSocket Protocol**](PROTOCOL.md) — full auth flow, close codes, and message contract

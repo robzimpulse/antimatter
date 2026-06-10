@@ -20,10 +20,24 @@ By connecting your phone to the IDE, you can view your active AI agent's traject
 👉 **[Read the Official Antimatter Documentation Here](https://antimatter.saifmukhtar.dev)**
 
 Because this repository contains multiple sub-projects, we have split the source documentation files into the `docs/` folder for clarity:
+
+**Getting Started**
+- [**Installation & Setup**](docs/INSTALLATION.md) - End-to-end: install, tunnel, and pair your phone.
 - [**Feature Breakdown**](docs/FEATURES.md) - A detailed list of everything Antimatter can do.
+- [**Troubleshooting & FAQ**](docs/TROUBLESHOOTING.md) - Fix common connection, tunnel, and pairing issues.
+
+**Architecture & Security**
 - [**Architecture Deep Dive**](docs/ARCHITECTURE.md) - Understand how we reverse-engineered the IDE hooks without official APIs.
 - [**Zero Trust Guide**](docs/ZERO_TRUST.md) - Learn how to set up Cloudflare Zero Trust (UI & CLI guides).
 - [**Security Policy**](docs/SECURITY.md) - Read about our Biometric locks, Cryptographic Handshakes, and protections.
+
+**Reference**
+- [**WebSocket Protocol**](docs/PROTOCOL.md) - The complete message contract between the extension and the app.
+- [**VS Code Extension Reference**](docs/EXTENSION.md) - Module map, commands, and settings.
+- [**Android App Reference**](docs/ANDROID.md) - Module/screen/ViewModel map.
+
+**Project**
+- [**Contributing & Development**](docs/CONTRIBUTING.md) - Local setup, lint/build commands, and docs preview.
 - [**Roadmap**](docs/ROADMAP.md) - Future plans for E2EE and Terminal isolation.
 - [**Changelog**](docs/CHANGELOG.md) - Detailed technical tracking of all project updates.
 
@@ -67,6 +81,23 @@ If you own a domain, this provides double-layered security.
 - **Real-Time Streaming**: Watch your agent's thought process character-by-character.
 - **Partial Text Selection**: Long-press AI chats or code blocks to trigger native copy/share selection tools.
 - **Zero Trust Security**: Cloudflare Tunnel integration + 256-bit Pairing Tokens ensure impenetrable local security.
+
+---
+
+## 📦 Repository Structure
+
+This is a monorepo containing two shippable sub-projects plus the documentation site:
+
+```text
+antimatter/
+├── extension/   # VS Code / AntiGravity extension (TypeScript) — the bridge server
+├── android/     # Companion Android app (Kotlin / Jetpack Compose) — the mobile client
+├── docs/        # MkDocs Material documentation (published to antimatter.saifmukhtar.dev)
+└── mkdocs.yml   # Documentation site configuration
+```
+
+The extension and app communicate over an authenticated WebSocket — see the
+[**WebSocket Protocol Reference**](docs/PROTOCOL.md) for the full message contract.
 
 ---
 

@@ -13,25 +13,48 @@ theme:
     text: Roboto
     code: Roboto Mono
   palette:
-    - scheme: default
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
       primary: deep purple
       accent: blue
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep purple
+      accent: blue
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
   features:
     - navigation.tabs
     - navigation.sections
     - navigation.top
+    - navigation.indexes
+    - navigation.footer
+    - toc.follow
     - search.suggest
     - search.highlight
     - content.code.copy
+    - content.action.edit
 
 nav:
   - Home: index.md
-  - Features: FEATURES.md
-  - Setup & Architecture:
+  - Getting Started:
+    - Installation & Setup: INSTALLATION.md
+    - Features: FEATURES.md
+    - Troubleshooting & FAQ: TROUBLESHOOTING.md
+  - Architecture & Security:
     - Architecture: ARCHITECTURE.md
     - Zero Trust Guide: ZERO_TRUST.md
     - Security Policy: SECURITY.md
-  - Development & Project:
+  - Reference:
+    - WebSocket Protocol: PROTOCOL.md
+    - VS Code Extension: EXTENSION.md
+    - Android App: ANDROID.md
+  - Project:
+    - Contributing & Development: CONTRIBUTING.md
     - Roadmap: ROADMAP.md
     - Changelog: CHANGELOG.md
 
@@ -45,6 +68,8 @@ markdown_extensions:
       pygments_lang_class: true
   - pymdownx.inlinehilite
   - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
   - tables
   - toc:
       permalink: true

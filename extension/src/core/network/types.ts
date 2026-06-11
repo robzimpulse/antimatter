@@ -20,7 +20,7 @@ export type InboundMessage =
 
 export type OutboundMessage =
   | { type: 'PONG' }
-  | { type: 'SESSION_STATE'; conversationId: string | null; model: string; stepCount: number; cloudflareUrl: string | null }
+  | { type: 'SESSION_STATE'; conversationId: string | null; model: string; stepCount: number; cloudflareUrl: string | null; environment: string }
   | { type: 'STEP'; step: TrajectoryStep; index: number }
   | { type: 'STEP_BATCH'; steps: { step: TrajectoryStep; index: number }[] }
   | { type: 'GENERATING'; conversationId: string }

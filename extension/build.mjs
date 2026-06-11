@@ -13,6 +13,7 @@ const buildOptions = {
   target: 'node22',
   sourcemap: false,
   minify: true,              // keep readable for debugging
+  treeShaking: true,
   logLevel: 'info',
 };
 

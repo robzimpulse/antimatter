@@ -66,6 +66,7 @@ export async function activate(context: vscode.ExtensionContext) {
         model: 'gemini-2.5-pro',
         stepCount: chatManager.getStepCount(),
         cloudflareUrl: tunnel.getUrl(),
+        environment: 'IDE'
       }));
       
       // Push active file immediately

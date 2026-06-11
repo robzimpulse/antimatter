@@ -100,20 +100,12 @@ export class BrainWatcher {
     const transcriptPath = path.join(this.brainPath, conversationId, '.system_generated', 'logs', 'transcript.jsonl');
 
     // Polling fallback loop for the exact transcript path if it doesn't exist yet
-    let attempts = 0;
-    const waitForFile = setInterval(async () => {
-      attempts++;
-      if (attempts > 120) {
-        clearInterval(waitForFile);
-        this.log(`Timeout waiting for brain transcript file: ${transcriptPath}`);
-        return;
-      }
-      
+    const waitForFile = setInterval(() => {
       if (fs.existsSync(transcriptPath)) {
         clearInterval(waitForFile);
         
         // Initial read
-        await this.processFile(transcriptPath, clientLastKnownStepCount);
+        this.processFile(transcriptPath, clientLastKnownStepCount);
 
         // Always broadcast SESSION_STATE after the initial read so stepCount is accurate
         this.connectionManager.broadcast({
@@ -122,6 +114,7 @@ export class BrainWatcher {
           model: 'gemini-2.5-pro',
           stepCount: this.chatState.getStepCount(),
           cloudflareUrl: this.tunnel.getUrl(),
+          environment: 'IDE',
         });
 
         // Watch for changes
@@ -130,7 +123,7 @@ export class BrainWatcher {
             // Debounce the fs.watch event (50ms) to prevent duplicate parsing
             if (this.debounceTimer) clearTimeout(this.debounceTimer);
             this.debounceTimer = setTimeout(() => {
-              this.processFile(transcriptPath, 0).catch(e => this.log(`Error reading file: ${e}`));
+              this.processFile(transcriptPath, 0);
             }, 50);
           }
         });
@@ -138,14 +131,10 @@ export class BrainWatcher {
     }, 500);
   }
 
-  private async processFile(transcriptPath: string, clientLastKnownStepCount: number) {
-    try {
-      await fs.promises.access(transcriptPath);
-    } catch {
-      return;
-    }
+  private processFile(transcriptPath: string, clientLastKnownStepCount: number) {
+    if (!fs.existsSync(transcriptPath)) return;
 
-    const stat = await fs.promises.stat(transcriptPath);
+    const stat = fs.statSync(transcriptPath);
 
     // File shrunk or was reset
     if (stat.size < this.lastReadBytes) {
@@ -155,9 +144,9 @@ export class BrainWatcher {
 
     if (stat.size > this.lastReadBytes) {
       const buffer = Buffer.alloc(stat.size - this.lastReadBytes);
-      const fd = await fs.promises.open(transcriptPath, 'r');
-      await fd.read(buffer, 0, buffer.length, this.lastReadBytes);
-      await fd.close();
+      const fd = fs.openSync(transcriptPath, 'r');
+      fs.readSync(fd, buffer, 0, buffer.length, this.lastReadBytes);
+      fs.closeSync(fd);
 
       this.lastReadBytes = stat.size;
 

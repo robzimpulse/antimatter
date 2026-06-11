@@ -1,7 +1,7 @@
 {
-  "name": "antimatter",
+  "name": "antimatter-bridge",
   "displayName": "Antimatter",
-  "description": "Bridges your live Antigravity IDE session to your Android Antimatter app over WebSocket.",
+  "description": "Synchronizes your live Antigravity IDE session to your Android Antimatter app.",
   "version": "1.0.0",
   "license": "MIT",
   "author": "Saif Mukhtar",

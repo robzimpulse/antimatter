@@ -4,7 +4,6 @@ export type InboundMessage =
   | { type: 'CANCEL_RESPONSE' }
   | { type: 'ACCEPT_EDITS' }
   | { type: 'REJECT_EDITS' }
-  | { type: 'CHANGE_MODEL' }
   | { type: 'NEXT_HUNK' }
   | { type: 'PREV_HUNK' }
   | { type: 'ACCEPT_HUNK' }

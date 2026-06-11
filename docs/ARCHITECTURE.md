@@ -1,48 +1,164 @@
 # Architecture Deep Dive
 
-Antimatter is built on the philosophy of bridging the gap between your local development environment and your mobile device, without requiring any official APIs from the host IDE. This document explains the core architecture of how Antimatter reverse-engineers and integrates with the Google AntiGravity IDE.
+Antimatter bridges the gap between your local development environment and your mobile device **without requiring any official APIs** from the host IDE. Instead, it reverse-engineers the AntiGravity agent's file-system output and exposes it over a secure WebSocket channel.
 
-## High-Level Flow
+!!! abstract "TL;DR"
+    AntiGravity writes agent logs to disk → the extension watches them with `fs.watch` → parses into `TrajectoryStep` objects → streams over a WebSocket → through a Cloudflare tunnel → to the Android app, which renders them in real-time with Jetpack Compose.
 
-1. **AntiGravity IDE**: The host IDE runs local agent trajectories, saving logs in a hidden `.system_generated` folder inside the workspace.
-2. **VS Code Extension (The Bridge)**: Antimatter runs as a VS Code extension inside AntiGravity. It constantly monitors the filesystem, parses the JSONL agent logs, and spins up a local WebSocket server.
-3. **Cloudflare Zero Trust**: The local WebSocket server is securely tunneled to the public internet via `cloudflared`, providing a public WSS endpoint (e.g., `wss://antimatter-extension...`).
-4. **Android App (The Client)**: The mobile app connects to the WSS endpoint using a Bearer Token (scanned via QR code), receives the JSON payloads, and renders them using Jetpack Compose.
+---
 
-## 1. The File System Monitor (Reverse-Engineering)
+## :material-sitemap: High-Level Architecture
 
-Since AntiGravity does not provide an official API to stream agent thoughts, Antimatter uses pure file-system monitoring to intercept the agent's brain activity.
+```text
+┌──────────────────────┐        ┌──────────────────────────────────┐
+│   AntiGravity IDE    │        │   VS Code Extension (Bridge)     │
+│                      │        │                                  │
+│  Agent writes logs   │ ─────▶ │  BrainWatcher (fs.watch)         │
+│  to transcript.jsonl │        │  ├─ parses JSONL → TrajectoryStep│
+│                      │        │  └─ ChatStateManager             │
+└──────────────────────┘        │                                  │
+                                │  BridgeWebSocketServer (ws)      │
+                                │  ├─ Origin validation            │
+                                │  ├─ Token + Ed25519 auth         │
+                                │  ├─ MessageRouter dispatch       │
+                                │  └─ broadcasts STEP / STEP_BATCH │
+                                │                                  │
+                                │  CloudflareTunnel (cloudflared)   │
+                                │  └─ wss://public-url             │
+                                └───────────────┬──────────────────┘
+                                                │ Cloudflare Edge
+                                                ▼
+                                ┌──────────────────────────────────┐
+                                │   Android App (Client)           │
+                                │                                  │
+                                │  BridgeWebSocket (OkHttp)        │
+                                │  ├─ Token auth + Ed25519 verify  │
+                                │  └─ emits Flow<InboundMessage>   │
+                                │                                  │
+                                │  Feature Screens (Compose)       │
+                                │  ├─ ChatScreen + ChatViewModel   │
+                                │  ├─ FilesScreen + FilesViewModel │
+                                │  ├─ TerminalScreen + TerminalVM  │
+                                │  └─ ConnectScreen + ConnectionVM │
+                                │                                  │
+                                │  Room DB (offline history)       │
+                                └──────────────────────────────────┘
+```
 
-When an agent runs, it creates a unique `conversation-id` folder inside:
-`<appDataDir>/brain/<conversation-id>/.system_generated/logs/transcript.jsonl`
+---
 
-The VS Code extension uses `fs.watch` to monitor the `brain` directory for the most recently modified conversation. It streams the `transcript.jsonl` file, parsing each JSON line into a `TrajectoryStep` object.
+## :material-numeric-1-circle: The File System Monitor (Reverse-Engineering)
 
-## 2. The WebSocket Bridge
+Since AntiGravity does **not** provide an official API to stream agent thoughts, Antimatter uses pure file-system monitoring to intercept the agent's brain activity.
 
-The VS Code extension runs a `ws` WebSocket server. To bypass local network restrictions (such as firewalls or NATs), the extension programmatically spawns a `cloudflared` process. 
-This process creates a secure Quick Tunnel, exposing the local WebSocket server to a public Cloudflare edge node.
+When an agent runs, it creates a unique conversation folder:
 
-## 3. Remote Terminal Execution (TerminalCommandHandler)
+```text
+<appDataDir>/brain/<conversation-id>/.system_generated/logs/transcript.jsonl
+```
 
-Antimatter allows users to proxy raw terminal commands from their phone to their host PC. This is handled by the `TerminalCommandHandler.ts` inside the VS Code extension:
-- It listens for `EXECUTE_COMMAND` messages over the WebSocket.
-- Uses Node.js `child_process.spawn` to launch `/bin/sh` or `cmd.exe`.
-- Streams `stdout`, `stderr`, and `exit codes` back as `COMMAND_OUTPUT` messages, creating a live shell proxy.
+The extension's **`BrainWatcher`** uses `fs.watch` to monitor the `brain/` directory. It:
 
-## 4. Payload Serialization and Chunking
+1. Detects the most recently modified conversation directory.
+2. Tails the `transcript.jsonl` file line-by-line.
+3. Parses each JSON line into a [`TrajectoryStep`](PROTOCOL.md#trajectorystep) object.
+4. Broadcasts new steps to all connected clients via `STEP` frames.
 
-The parsed `TrajectoryStep` objects are serialized into JSON and broadcasted to connected Android clients. Because full conversation histories can easily exceed 10+ Megabytes, the extension chunks the history payloads into smaller arrays (e.g., 10 steps per message). This prevents Cloudflare Tunnel from aborting the connection due to WebSocket frame size limits.
+!!! info "Step types"
+    The agent's trajectory includes many step types: `userInput`, `plannerResponse`, `text`, `toolCall`, `runCommand`, `approvalInteraction`, `elicitation`, and more. See the full [`StepCase` enum](PROTOCOL.md#trajectorystep) for the complete mapping.
 
-## 5. The Android Client
+---
 
-The Android app is built natively using Kotlin and Jetpack Compose. 
+## :material-numeric-2-circle: The WebSocket Bridge
 
-- **Connection**: It uses `OkHttp` to establish the WebSocket connection.
-- **Biometric Security**: Sensitive features (like the Remote Terminal) are locked behind Android's `androidx.biometric` API, ensuring that only the physical owner of the phone can execute host commands.
-- **State Management**: It maintains a `ChatUiState` containing the conversation history. As new steps arrive, it patches the existing trajectory state.
-- **Rendering**: It uses `reverseLayout` LazyColumns to natively anchor the chat to the bottom of the screen, ensuring that as AI "Thinking" bubbles expand, the UI smoothly pushes older messages upward without jitter. Markdown is rendered using `Markwon`.
+The extension runs a [`ws`](https://github.com/websockets/ws) WebSocket server bound to `127.0.0.1` (never exposed directly). To bypass firewalls and NATs, the extension spawns a `cloudflared` process that creates a secure Cloudflare tunnel.
 
-## 6. Extensibility
+**Connection flow:**
 
-Because the core data structure is unified around the `TrajectoryStep` class, any future tools or plugins added to the AntiGravity IDE will automatically be parsed by the file system monitor and sent to the mobile app, as long as they adhere to the JSONL logging format.
+1. Client connects to the public `wss://` URL.
+2. **Origin validation** — only `vscode-webview://` and `*.cloudflareaccess.com` origins are accepted (prevents CSWSH).
+3. **Token verification** — the 256-bit pairing token is checked with `crypto.timingSafeEqual`.
+4. **Ed25519 handshake** — the client sends `AUTH_CHALLENGE` with a nonce; the bridge signs it and returns `AUTH_RESPONSE`.
+5. Client is marked authenticated and receives `SESSION_STATE`.
+
+!!! tip "Full protocol"
+    See the [**WebSocket Protocol Reference**](PROTOCOL.md) for every message type, field, and close code.
+
+---
+
+## :material-numeric-3-circle: Message Routing
+
+The **`MessageRouter`** dispatches each inbound JSON message to the appropriate handler based on its `type` field:
+
+| Message type | Handler module | Action |
+|-------------|---------------|--------|
+| `AUTH_CHALLENGE` | `AuthHandler` | Sign nonce, reply `AUTH_RESPONSE` |
+| `SEND_MESSAGE`, `NEW_CONVERSATION`, `CANCEL_RESPONSE` | `ChatCommandHandler` | Inject into agent via `vscode.commands` |
+| `ACCEPT_EDITS`, `REJECT_EDITS`, `*_HUNK` | `ChatCommandHandler` | Proxy diff decisions |
+| `GET_FILES`, `READ_FILE`, `WRITE_FILE` | `FileCommandHandler` | Serve workspace tree/files |
+| `EXECUTE_COMMAND` | `TerminalCommandHandler` | Spawn shell, stream output |
+| `SUBSCRIBE_CONVERSATION`, `GET_HISTORY`, `GET_ARTIFACTS` | `extension.ts` | Replay trajectory / list conversations |
+| `PING` | `extension.ts` | Reply `PONG` |
+
+If a handler throws, the bridge sends an `ERROR` frame. Unknown types are logged and ignored.
+
+---
+
+## :material-numeric-4-circle: Remote Terminal Execution
+
+The `TerminalCommandHandler` proxies raw shell commands from the phone to the host:
+
+1. Listens for `EXECUTE_COMMAND` messages over the WebSocket.
+2. Uses Node.js `child_process.spawn` to launch the host shell.
+3. Streams `stdout` and `stderr` back as `COMMAND_OUTPUT` messages in real-time.
+
+!!! danger "Security"
+    The terminal runs with the same permissions as the VS Code process. On the client side, this is gated behind a **biometric lock** (Android `androidx.biometric` API) so only the physical device owner can execute commands.
+
+---
+
+## :material-numeric-5-circle: Payload Serialization & Compression
+
+- Parsed `TrajectoryStep` objects are serialized to JSON and broadcast to connected clients.
+- Full conversation histories can exceed **10+ MB**, so the extension batches them into `STEP_BATCH` arrays when a client subscribes.
+- **`permessage-deflate`** compression is enabled on the WebSocket server to reduce bandwidth (configurable chunk size and memory level).
+- Maximum WebSocket payload: **10 MiB**.
+
+---
+
+## :material-numeric-6-circle: The Android Client
+
+The app is built natively with **Kotlin** and **Jetpack Compose**, following a multi-module MVVM architecture:
+
+| Layer | Technology | Purpose |
+|-------|-----------|---------|
+| **Networking** | OkHttp + `BridgeWebSocket` | WebSocket client, token + Ed25519 auth |
+| **Background** | `BridgeService` (Foreground Service) | Keeps socket alive when app is backgrounded |
+| **Persistence** | Room + DataStore | Offline conversation/step/artifact history |
+| **DI** | Hilt | Dependency injection |
+| **UI** | Jetpack Compose | Declarative UI with Material 3 theming |
+| **Rendering** | Custom `MarkdownText` | Renders AI Markdown responses with syntax highlighting |
+
+**Key rendering decisions:**
+
+- Chat uses `reverseLayout` `LazyColumn` to anchor at the bottom — as AI "thinking" bubbles expand, older messages scroll up smoothly without jitter.
+- Each `TrajectoryStep` maps to a `StepCase` enum that drives rendering: plain text, tool call cards, run-command blocks, approval prompts, etc.
+
+---
+
+## :material-numeric-7-circle: Extensibility
+
+Because the core data structure is unified around `TrajectoryStep`, **any future tools or plugins** added to AntiGravity will automatically be parsed by the file system monitor and streamed to the mobile app — as long as they write to the JSONL log format.
+
+The modular architecture also makes it straightforward to add new feature modules on both sides:
+
+- **Extension**: add a new `feature/` handler and register it on the `MessageRouter`.
+- **Android**: add a new `:feature:*` module with a Screen + ViewModel.
+
+---
+
+## :material-arrow-right-bold: Next Steps
+
+- [**WebSocket Protocol Reference**](PROTOCOL.md) — the full message contract
+- [**VS Code Extension Reference**](EXTENSION.md) — module map and source layout
+- [**Android App Reference**](ANDROID.md) — Gradle module graph and screen/ViewModel map

@@ -1,6 +1,7 @@
 site_name: Antimatter Documentation
 site_description: Open-source bridge ecosystem connecting your mobile device to Google AntiGravity IDE
 site_author: Saif Mukhtar
+copyright: Copyright &copy; 2025 Saif Mukhtar &mdash; MIT License
 
 repo_name: saifmukhtar/antimatter
 repo_url: https://github.com/saifmukhtar/antimatter
@@ -9,31 +10,79 @@ edit_uri: edit/main/docs/
 
 theme:
   name: material
+  custom_dir: docs/overrides
   font:
-    text: Roboto
-    code: Roboto Mono
+    text: Inter
+    code: JetBrains Mono
+  icon:
+    repo: fontawesome/brands/github
+    logo: material/atom-variant
   palette:
-    - scheme: default
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
       primary: deep purple
-      accent: blue
+      accent: amber
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep purple
+      accent: amber
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
   features:
+    - navigation.instant
+    - navigation.instant.prefetch
     - navigation.tabs
+    - navigation.tabs.sticky
     - navigation.sections
     - navigation.top
+    - navigation.indexes
+    - navigation.footer
+    - navigation.path
+    - toc.follow
     - search.suggest
     - search.highlight
+    - search.share
     - content.code.copy
+    - content.code.select
+    - content.action.edit
+    - content.tooltips
+    - header.autohide
 
 nav:
   - Home: index.md
-  - Features: FEATURES.md
-  - Setup & Architecture:
+  - Getting Started:
+    - Installation & Setup: INSTALLATION.md
+    - Features: FEATURES.md
+    - Troubleshooting & FAQ: TROUBLESHOOTING.md
+  - Architecture & Security:
     - Architecture: ARCHITECTURE.md
     - Zero Trust Guide: ZERO_TRUST.md
     - Security Policy: SECURITY.md
-  - Development & Project:
+  - Reference:
+    - WebSocket Protocol: PROTOCOL.md
+    - VS Code Extension: EXTENSION.md
+    - Android App: ANDROID.md
+  - Project:
+    - Contributing & Development: CONTRIBUTING.md
     - Roadmap: ROADMAP.md
     - Changelog: CHANGELOG.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/saifmukhtar/antimatter
+      name: GitHub
+    - icon: fontawesome/brands/android
+      link: https://f-droid.org/packages/dev.saifmukhtar.antimatter/
+      name: F-Droid
+  generator: false
+
+extra_css:
+  - stylesheets/extra.css
 
 markdown_extensions:
   - admonition
@@ -45,6 +94,21 @@ markdown_extensions:
       pygments_lang_class: true
   - pymdownx.inlinehilite
   - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.critic
   - tables
+  - attr_list
+  - md_in_html
+  - def_list
+  - abbr
+  - footnotes
   - toc:
       permalink: true

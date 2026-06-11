@@ -1,68 +1,134 @@
-# Antimatter IDE Features
+# Features
 
-Welcome to the detailed breakdown of the features included in the Antimatter IDE. The ecosystem is split into two halves: the VS Code Extension (which acts as the bridge server) and the Android App (which acts as the mobile client). 
-
-Together, they allow you to remotely interact with your code, chat with the AI, and run terminal commands—all secured by military-grade cryptography.
+A detailed breakdown of every capability in the Antimatter ecosystem. The system is split into two halves — the **VS Code Extension** (the bridge server on your desktop) and the **Android App** (the mobile client in your pocket) — connected by a secure WebSocket channel.
 
 ---
 
-## 📱 Android App Features
+## :material-cellphone: Android App
 
-### 💬 AI Chat Interface
-- **Seamless Prompting:** Talk directly to the Antigravity agent running on your computer.
-- **Partial Text Selection:** Long-press on any AI response or user message to select specific lines of text, bringing up the native Android copy/share toolbar.
-- **Markdown Rendering:** AI responses are fully rendered with Markdown, including bolding, italics, links, and code blocks.
-- **Message Edit Workflow:** Approve or reject code edits proposed by the AI directly from the chat UI.
-- **Continuous Scrolling:** Scroll history is maintained effortlessly as long-running queries process.
+### :material-message-text: AI Chat Interface
 
-### 📂 Workspace Explorer
-- **Live File Tree:** Browse the files currently open or present in your VS Code workspace.
-- **File Viewing:** Open specific files to read their contents remotely.
-- **Real-Time Sync:** File trees sync via the WebSocket connection so you always see what's on your PC.
+<div class="screenshot-gallery" markdown>
 
-### 💻 Remote Terminal
-- **Secure Access:** Tapping the terminal icon prompts a Biometric (Fingerprint/Face) lock. The terminal will *only* open if you are the physical owner of the device.
-- **Live Command Proxy:** Execute commands directly onto your desktop's shell. 
-- **Real-Time Output:** The terminal streams `stdout` and `stderr` in real-time, functioning exactly as if you were typing on your desktop.
-- **Unrestricted Power:** By design, the terminal runs with the same permissions as your VS Code instance, giving you full control over git, npm, and system configs.
+![Chat Interface](images/chats.png){ loading=lazy }
+![Chat History](images/chat-history.png){ loading=lazy }
 
-### 🛡️ Network Security
-- **Cloudflare Zero Trust Integration:** Easily input your Cloudflare Client ID and Client Secret for enterprise-grade Zero Trust access.
-- **QR Code Pairing:** Connect instantly by scanning the QR code from VS Code—no typing required.
+</div>
+
+The chat screen gives you a full view of your AI agent's conversation:
+
+- **Seamless Prompting** — type a message and it's injected directly into the active AntiGravity agent. No copy-paste; the bridge proxies it via `vscode.commands.executeCommand`.
+- **Partial Text Selection** — long-press on any AI response or user message to select specific lines of text, triggering the native Android copy/share toolbar.
+- **Rich Markdown Rendering** — AI responses render with full Markdown support: **bold**, *italic*, `code`, links, and fenced code blocks with syntax highlighting.
+- **Edit Decisions** — when the agent proposes file edits, accept or reject them directly from the chat UI. You can also navigate and act on individual diff hunks.
+- **Thinking Indicator** — a live typing/thinking animation shows when the agent is generating.
+- **Conversation History** — browse past conversations, tap to subscribe and replay the full trajectory.
+
+### :material-folder-multiple: Workspace Explorer
+
+<div class="screenshot-gallery" markdown>
+
+![Workspace Browser](images/workspace.png){ loading=lazy }
+![File Viewer](images/file-viewer.png){ loading=lazy }
+
+</div>
+
+- **Live File Tree** — browse the files in your VS Code workspace. The tree syncs in real-time via the `GET_FILES` / `FILE_TREE` messages.
+- **File Viewing** — tap any file to read its contents, syntax-highlighted by language.
+- **File Writing** — write file contents back via `WRITE_FILE` (for quick edits on the go).
+- **Real-Time Sync** — navigate subdirectories; the tree refreshes as your workspace changes.
+
+### :material-console: Remote Terminal
+
+<div class="screenshot-gallery" markdown>
+
+![Remote Terminal](images/terminal.png){ loading=lazy }
+
+</div>
+
+- **Biometric-Gated** — tapping the terminal icon triggers a **Fingerprint / Face** biometric prompt. The terminal only opens if you're the physical owner of the device.
+- **Live Command Proxy** — type a command and it's executed on your host machine's shell via `child_process`. Output streams back in real-time.
+- **Real-Time Output** — `stdout` and `stderr` are streamed character-by-character as `COMMAND_OUTPUT` messages. It feels like you're sitting at your desk.
+- **Full Permissions** — the terminal runs with the same permissions as your VS Code instance: `git`, `npm`, system configs — full control.
+
+!!! danger "Use responsibly"
+    The remote terminal gives full shell access to your host. The biometric lock is your safeguard — treat it accordingly.
+
+### :material-puzzle: Artifacts
+
+<div class="screenshot-gallery" markdown>
+
+![Artifacts UI](images/artifact.png){ loading=lazy }
+
+</div>
+
+- Browse artifacts generated during agent conversations (code files, images, etc.).
+- Tap to view artifact contents with syntax highlighting.
+
+### :material-shield-lock: Network Security (Client-side)
+
+- **Cloudflare Zero Trust Integration** — enter your Cloudflare Client ID and Client Secret in the app's Advanced Options for enterprise-grade access control.
+- **QR Code Pairing** — scan one QR code to transfer the WebSocket URL, 256-bit pairing token, and Ed25519 public key. No manual entry needed.
+- **Token-Based Auth** — every WebSocket connection includes the pairing token as a Bearer credential.
+- **Ed25519 Verification** — the app verifies the bridge's identity via a cryptographic handshake after connecting.
 
 ---
 
-## 🧩 VS Code Extension Features
+## :material-puzzle-outline: VS Code Extension
 
-### 🔌 Background Bridge Server
-- **Silent Operation:** Runs an invisible WebSocket server binding to a local port (default `8080`) to stream telemetry, files, and chat data to the mobile client.
-- **Auto-Start:** Automatically initializes when you open the Antigravity IDE workspace.
+### :material-server-network: Background Bridge Server
 
-### 🔐 Cryptographic Authentication
-- **Pairing Token Validation:** On the first run, the extension generates a 256-bit cryptographic "Pairing Token". The server rejects *any* connection that does not present this token, making local network snooping mathematically impossible.
-- **Ed25519 Handshake:** Uses public-key cryptography to sign nonces, proving the server's identity to the mobile app and preventing Man-in-the-Middle (MITM) attacks.
+- **Silent Operation** — runs an invisible WebSocket server on `127.0.0.1` (default port `8765`), streaming trajectory data, file trees, and chat messages.
+- **Auto-Start** — automatically initializes when AntiGravity opens (configurable via `antimatter.autoStart`).
+- **Per-Message Compression** — `permessage-deflate` keeps bandwidth low, even for large trajectory payloads.
 
-### 📡 Cloudflare Tunnel Management
-- **One-Click Tunnel Restart:** Easily restart your Cloudflare tunnel bindings directly from the VS Code command palette.
-- **QR Code Generation:** Embeds the Pairing Token and connection URLs into a highly scannable QR code right inside your IDE.
+### :material-key-variant: Cryptographic Authentication
+
+- **256-bit Pairing Token** — generated on first run and stored in VS Code `SecretStorage`. Every connection must present this token (checked with `crypto.timingSafeEqual`).
+- **Ed25519 Handshake** — after the token check, the bridge signs a client-provided nonce with its persistent private key, proving its identity and preventing Man-in-the-Middle attacks.
+- **Rate Limiting** — 5 failed token attempts = 60-second IP ban (close code `4000`).
+
+!!! info "Full protocol details"
+    See the [**WebSocket Protocol Reference**](PROTOCOL.md) for every message type, close code, and handshake step.
+
+### :material-cloud-sync: Cloudflare Tunnel Management
+
+- **Auto-Tunnel** — when `cloudflareHostname` is blank, the extension automatically downloads `cloudflared`, spawns a free Quick Tunnel, and resolves the public URL.
+- **Zero Trust Support** — set your hostname and credentials for persistent, enterprise-grade tunnels.
+- **One-Click Restart** — run `Antimatter: Restart Cloudflare Tunnel` from the Command Palette.
+- **QR Code Generation** — embeds the pairing token, public URL, and bridge public key into a scannable QR code right inside your IDE.
+
+### :material-brain: Agent Trajectory Watcher
+
+- **File System Monitoring** — uses `fs.watch` to follow `brain/<conversation-id>/.system_generated/logs/transcript.jsonl`, parsing each JSON line into a `TrajectoryStep`.
+- **Live Streaming** — new steps are broadcast to connected clients as `STEP` frames in real-time.
+- **Batch Replay** — when a client subscribes (or resumes), the full backlog is sent as a single `STEP_BATCH`.
 
 ---
 
-## 🚀 Setup Guide
+## :material-compare: Feature Matrix
 
-To get the most out of Antimatter, you need to expose your local VS Code extension to your phone over the internet. We recommend two approaches depending on your domain ownership:
+| Capability | Android App | VS Code Extension |
+|-----------|:-----------:|:-----------------:|
+| View agent trajectory | :material-check: | :material-check: (generates) |
+| Send prompts to agent | :material-check: | :material-check: (proxies) |
+| Accept/reject edits | :material-check: | :material-check: (executes) |
+| Hunk navigation | :material-check: | :material-check: (executes) |
+| Browse workspace files | :material-check: | :material-check: (serves) |
+| Read/write files | :material-check: | :material-check: (serves) |
+| Remote terminal | :material-check: (biometric) | :material-check: (executes) |
+| Conversation history | :material-check: | :material-check: (serves) |
+| Artifacts | :material-check: | :material-check: (serves) |
+| QR pairing | :material-check: (scans) | :material-check: (generates) |
+| Cloudflare tunnels | :material-check: (connects) | :material-check: (manages) |
+| Ed25519 handshake | :material-check: (verifies) | :material-check: (signs) |
+| Offline history | :material-check: (Room DB) | — |
+| Biometric lock | :material-check: | — |
 
-### Method 1: TryCloudflare (No Domain Required)
-If you don't own a domain, you can use Cloudflare's free temporary tunnels.
-1. Run `cloudflared tunnel --url localhost:8080` on your desktop.
-2. Cloudflare will give you a temporary URL (e.g., `wss://funny-words.trycloudflare.com`).
-3. Enter this URL in the Antimatter Android app, or paste it into the VS Code extension settings to generate a QR code.
-> **Security Note on TryCloudflare:** Because the URL is public, anyone who guesses the URL can attempt to connect. However, because Antimatter uses a 256-bit **Pairing Token**, unauthorized users will still be instantly rejected.
+---
 
-### Method 2: Cloudflare Zero Trust (Domain Required - Recommended)
-If you own a domain, this is the most secure and robust setup.
-1. Setup a Cloudflare Zero Trust tunnel pointing `ide.yourdomain.com` to `localhost:8080`.
-2. Protect the route using a Cloudflare Access Application, and generate a **Service Auth Client ID and Secret**.
-3. In the Android App, go to **Advanced Options** on the Connect screen.
-4. Enter your custom `wss://ide.yourdomain.com` URL along with your Client ID and Client Secret.
-> **Security Note:** This setup provides double-layered protection. Attackers are blocked at the Cloudflare edge (Zero Trust), and even if they bypass that, they are blocked by the Antimatter Pairing Token locally.
+## :material-arrow-right-bold: What's Next?
+
+- See the [**Architecture**](ARCHITECTURE.md) page to understand how the bridge reverse-engineers the IDE.
+- Read the [**WebSocket Protocol**](PROTOCOL.md) for the full message contract.
+- Check the [**Roadmap**](ROADMAP.md) for upcoming features like E2EE and terminal isolation.

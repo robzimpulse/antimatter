@@ -1,8 +1,7 @@
 {
-    "pairing_token": "OpsU0wEIYmRVt_0RvdBHV_xwbI",
-    "private_key_pem": "-----BEGIN PRIVATE KEY-----\nMC4CEIHK7kZz3fM56S+6bSs/kygPAz6x3CuQq01RzdW8f+mrL\n-----END PRIVATE KEY-----\n",
-    "cloudflare_url": "wss://nsion.saifmukhtar.dev",
-    "cloudflare_client_id": "7ab1fb4c9810b32515.access",
-    "cloudflare_client_secret": "35cf94cfbd068ad9bcf4ad658caf70f",
-    "gemini_api_key": ""
+    "pairing_token": "YOUR_32_BYTE_URLSAFE_BASE64_TOKEN_OR_LEAVE_BLANK_TO_AUTOGENERATE",
+    "private_key_pem": "-----BEGIN PRIVATE KEY-----\nYOUR_PEM_KEY_OR_LEAVE_BLANK_TO_AUTOGENERATE\n-----END PRIVATE KEY-----\n",
+    "cloudflare_url": "wss://my-tunnel.yourdomain.com",
+    "cloudflare_client_id": "dummy_client_id.access",
+    "cloudflare_client_secret": "dummy_client_secret_xyz123"
 }

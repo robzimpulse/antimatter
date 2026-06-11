@@ -1,6 +1,6 @@
 # Installation & Setup
 
-This guide walks you end-to-end — from a fresh machine to a fully paired phone — in about 5 minutes. You do **not** need to compile anything; pre-built releases are provided.
+This guide walks you end-to-end — from a fresh machine to a fully paired phone — in about **5-10 minutes** (depending on internet speed and initial downloads). You do **not** need to compile anything; pre-built releases are provided.
 
 ---
 
@@ -10,7 +10,7 @@ Before you begin, make sure you have the following:
 
 | Requirement | Version | Purpose |
 |-------------|---------|---------|
-| **Google AntiGravity IDE** | Latest | The host IDE your AI agent runs inside |
+| **AntiGravity IDE** | Latest | The host IDE your AI agent runs inside |
 | **Node.js** | 22+ | Required by the bridge server (the extension) |
 | **Android device** | Android 8.0+ | Or an emulator with camera (for QR scanning) |
 | **Cloudflare** *(optional)* | `cloudflared` CLI | Only needed for Cloudflare Zero Trust (recommended, not required) |

@@ -34,5 +34,3 @@ include = [
     "antimatter_bridge",
 ]
 
-[tool.hatch.build.targets.wheel.force-include]
-"antimatter_bridge/assets" = "antimatter_bridge/assets"

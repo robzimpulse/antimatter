@@ -36,7 +36,26 @@ def get_latest_conversation_id(app_data_dir: Path) -> str:
     conv_dirs.sort(key=lambda d: (brain_dir / d).stat().st_mtime, reverse=True)
     return conv_dirs[0]
 
-CURRENT_CONVERSATION_ID = os.environ.get("AGY_CONVERSATION_ID") or get_latest_conversation_id(APP_DATA_DIR)
+# VULN-V3-002: IP-based rate limiting state
+# Maps remote_addr -> {"count": int, "reset_at": float}
+_ip_failure_counts: dict[str, dict] = {}
+_RATE_LIMIT_MAX_FAILURES = 5
+_RATE_LIMIT_WINDOW_SECONDS = 60
+
+def _record_auth_failure(remote_addr: str) -> None:
+    """Record a failed authentication attempt for rate limiting."""
+    import time
+    now = time.monotonic()
+    data = _ip_failure_counts.get(remote_addr, {"count": 0, "reset_at": 0.0})
+    if now >= data["reset_at"]:
+        data = {"count": 0, "reset_at": now + _RATE_LIMIT_WINDOW_SECONDS}
+    data["count"] += 1
+    _ip_failure_counts[remote_addr] = data
+    if data["count"] >= _RATE_LIMIT_MAX_FAILURES:
+        logger.warning(f"IP {remote_addr} has {data['count']} auth failures — rate limiting active for {_RATE_LIMIT_WINDOW_SECONDS}s")
+
+# BUG-004: Do NOT evaluate conversation ID at module import time — look it up fresh per-connection
+# (CURRENT_CONVERSATION_ID removed; each handler call invokes get_latest_conversation_id directly)
 
 def get_default_workspace() -> str:
     # If AGY_WORKSPACE_DIR is explicitly set, use it.
@@ -57,10 +76,22 @@ def get_default_workspace() -> str:
 
 async def handler(websocket, path=None):
     logger.info("New connection attempt...")
-    # Refresh conversation ID on connect in case a new one started
-    convo_id = CURRENT_CONVERSATION_ID or get_latest_conversation_id(APP_DATA_DIR)
+
+    # VULN-V3-002: Check IP-based rate limit before any auth processing
+    import time
+    remote_addr = getattr(websocket, "remote_address", ("unknown",))[0]
+    now = time.monotonic()
+    rate_data = _ip_failure_counts.get(remote_addr)
+    if rate_data and rate_data["count"] >= _RATE_LIMIT_MAX_FAILURES and now < rate_data["reset_at"]:
+        logger.warning(f"Rate-limited connection from {remote_addr}")
+        await websocket.close()
+        return
+
+    # BUG-004: Look up the latest conversation ID fresh on every new connection
+    # instead of using a stale module-level constant captured at startup.
+    convo_id = os.environ.get("AGY_CONVERSATION_ID") or get_latest_conversation_id(APP_DATA_DIR)
     bridge = AgentBridge(websocket, str(APP_DATA_DIR), convo_id)
-    
+
     # Try authenticating via URL token parameter
     authenticated = False
     try:
@@ -83,6 +114,9 @@ async def handler(websocket, path=None):
                     "cloudflareUrl": None,
                     "environment": "2.0"
                 }))
+            else:
+                # VULN-V3-002: Record URL-token auth failure for rate limiting
+                _record_auth_failure(remote_addr)
     except Exception as e:
         logger.warning(f"Error parsing URL params: {e}")
 

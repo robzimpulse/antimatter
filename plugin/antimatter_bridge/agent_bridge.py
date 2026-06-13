@@ -11,6 +11,11 @@ class AgentBridge:
         self.app_data_dir = app_data_dir
         self.conversation_id = current_convo_id
         self.step_index = 0
+        # BUG-005: Initialize last_position here so poll_transcript never raises AttributeError
+        # even if send_transcript was not called first
+        self.last_position = 0
+        # BUG-006: Stop event for graceful shutdown of poll_transcript
+        self._stop_event = asyncio.Event()
 
     async def _send_step(self, case: str, value: str = None, tool: str = None):
         step_payload = {"case": case}
@@ -121,35 +126,43 @@ class AgentBridge:
         }))
 
     async def poll_transcript(self):
+        """Poll the transcript file for new lines, with graceful shutdown and debouncing."""
         import asyncio
-        import json
-        transcript_path = os.path.join(self.app_data_dir, "brain", self.conversation_id, ".system_generated", "logs", "transcript.jsonl")
-        
+        transcript_path = os.path.join(
+            self.app_data_dir, "brain", self.conversation_id,
+            ".system_generated", "logs", "transcript.jsonl"
+        )
+
+        # Wait for file to exist, but respect the stop event
         while not os.path.exists(transcript_path):
+            if self._stop_event.is_set():
+                return
             await asyncio.sleep(1)
-            
+
         with open(transcript_path, 'r', encoding='utf-8') as f:
-            f.seek(getattr(self, 'last_position', 0))
-            while True:
+            f.seek(self.last_position)
+            # BUG-006 / STAB-004: Loop checks stop event for graceful shutdown;
+            # a short sleep acts as a debounce to avoid spinning on rapid writes.
+            while not self._stop_event.is_set():
                 line = f.readline()
                 if not line:
-                    await asyncio.sleep(0.5)
+                    # STAB-004: 100ms sleep as debounce instead of tight 0ms spin
+                    await asyncio.sleep(0.1)
                     continue
-                
+
                 parsed_steps = self._parse_line(line)
                 if parsed_steps:
                     for s in parsed_steps:
-                        # Inform app that generation has started/stopped appropriately
                         if s["step"]["case"] in ["userInput", "toolCall"]:
                             await self._send_generating()
                         elif s["step"]["case"] in ["text", "errorMessage", "ephemeralMessage"]:
                             await self._send_response_complete()
-                            
+
                     await self.websocket.send(json.dumps({
                         "type": "STEP_BATCH",
                         "steps": parsed_steps
                     }))
-        
+
     async def send_artifacts(self, convo_id: str):
         artifacts_dir = os.path.join(self.app_data_dir, "brain", convo_id)
         artifacts = []
@@ -244,4 +257,5 @@ class AgentBridge:
             await self._send_response_complete()
 
     async def cleanup(self):
-        pass
+        # BUG-006: Signal poll_transcript to stop gracefully
+        self._stop_event.set()

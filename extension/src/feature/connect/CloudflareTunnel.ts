@@ -33,10 +33,14 @@ export class CloudflareTunnel {
 
       this.quickTunnelProcess.stderr?.on('data', (data) => {
         const output = data.toString();
-        // Extract the generated trycloudflare URL
-        const match = output.match(/https:\/\/[a-zA-Z0-9-]+\.trycloudflare\.com/);
-        if (match && !this.url) {
-          const httpUrl = match[0];
+        // STAB-002: Two patterns guard against Cloudflare changing their output format.
+        // Primary: full https:// URL (current format)
+        const primaryMatch = output.match(/https:\/\/[a-zA-Z0-9-]+\.trycloudflare\.com/);
+        // Fallback: bare domain name without protocol prefix
+        const fallbackMatch = output.match(/([a-zA-Z0-9-]+\.trycloudflare\.com)/);
+        const httpUrl = primaryMatch?.[0] ?? (fallbackMatch ? `https://${fallbackMatch[1]}` : null);
+
+        if (httpUrl && !this.url) {
           this.url = httpUrl.replace('https://', 'wss://');
           this.log(`Quick tunnel established: ${this.url}`);
           this.broadcast({ type: 'CLOUDFLARE_URL', url: this.url as string });

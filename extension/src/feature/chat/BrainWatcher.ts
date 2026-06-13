@@ -99,8 +99,17 @@ export class BrainWatcher {
 
     const transcriptPath = path.join(this.brainPath, conversationId, '.system_generated', 'logs', 'transcript.jsonl');
 
-    // Polling fallback loop for the exact transcript path if it doesn't exist yet
+    // BUG-001: Polling fallback with a 60-second timeout (120 × 500ms) to prevent memory leak
+    // if the transcript file never appears (e.g. AntiGravity crashed).
+    let waitAttempts = 0;
+    const MAX_WAIT_ATTEMPTS = 120;
     const waitForFile = setInterval(() => {
+      waitAttempts++;
+      if (waitAttempts > MAX_WAIT_ATTEMPTS) {
+        clearInterval(waitForFile);
+        this.log(`[BrainWatcher] Timeout waiting for transcript: ${transcriptPath}`);
+        return;
+      }
       if (fs.existsSync(transcriptPath)) {
         clearInterval(waitForFile);
         
@@ -131,10 +140,16 @@ export class BrainWatcher {
     }, 500);
   }
 
-  private processFile(transcriptPath: string, clientLastKnownStepCount: number) {
-    if (!fs.existsSync(transcriptPath)) return;
+  // STAB-001: Made async to use fs.promises instead of blocking synchronous I/O,
+  // preventing the Node.js event loop from stalling on large transcript files.
+  private async processFile(transcriptPath: string, clientLastKnownStepCount: number) {
+    try {
+      await fs.promises.access(transcriptPath);
+    } catch {
+      return;
+    }
 
-    const stat = fs.statSync(transcriptPath);
+    const stat = await fs.promises.stat(transcriptPath);
 
     // File shrunk or was reset
     if (stat.size < this.lastReadBytes) {
@@ -143,10 +158,14 @@ export class BrainWatcher {
     }
 
     if (stat.size > this.lastReadBytes) {
-      const buffer = Buffer.alloc(stat.size - this.lastReadBytes);
-      const fd = fs.openSync(transcriptPath, 'r');
-      fs.readSync(fd, buffer, 0, buffer.length, this.lastReadBytes);
-      fs.closeSync(fd);
+      const bufSize = stat.size - this.lastReadBytes;
+      const buffer = Buffer.alloc(bufSize);
+      const fh = await fs.promises.open(transcriptPath, 'r');
+      try {
+        await fh.read(buffer, 0, bufSize, this.lastReadBytes);
+      } finally {
+        await fh.close();
+      }
 
       this.lastReadBytes = stat.size;
 

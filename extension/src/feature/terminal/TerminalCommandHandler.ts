@@ -1,7 +1,75 @@
 import { spawn } from 'child_process';
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 import * as vscode from 'vscode';
 import { MessageRouter } from '../../core/network/MessageRouter';
 import { ConnectionManager } from '../connect/ConnectionManager';
+
+const AUDIT_LOG_PATH = path.join(os.tmpdir(), 'antimatter_terminal_audit.log');
+
+// VULN-V2-001: Allowlist of safe command patterns
+const ALLOWED_COMMANDS: RegExp[] = [
+  /^npm\s+/,
+  /^yarn\s+/,
+  /^pnpm\s+/,
+  /^git\s+/,
+  /^ls(\s|$)/,
+  /^cat\s+/,
+  /^pwd$/,
+  /^echo\s+/,
+  /^mkdir\s+/,
+  /^touch\s+/,
+  /^cp\s+/,
+  /^mv\s+/,
+  /^grep\s+/,
+  /^find\s+/,
+  /^which\s+/,
+  /^env$/,
+  /^node\s+/,
+  /^python3?\s+/,
+  /^pip3?\s+/,
+  /^gradlew?\s+/,
+  /^make\s+/,
+];
+
+// VULN-V2-001: Explicit denylist for dangerous command patterns
+const DANGEROUS_PATTERNS: RegExp[] = [
+  /\brm\s+-[rf]+/,
+  /\bsudo\b/,
+  /\bchmod\b/,
+  /\bchown\b/,
+  /\bmkfs\b/,
+  /\bdd\b/,
+  /\bformat\b/,
+  /\bshutdown\b/,
+  /\breboot\b/,
+  /\b(crontab|at)\b/,
+  /;|\|\||&&|`|\$\(/,  // Shell injection operators
+];
+
+function isCommandAllowed(command: string): boolean {
+  const cmd = command.trim();
+  if (DANGEROUS_PATTERNS.some(p => p.test(cmd))) {
+    return false;
+  }
+  return ALLOWED_COMMANDS.some(p => p.test(cmd));
+}
+
+function isDangerous(command: string): boolean {
+  return DANGEROUS_PATTERNS.some(p => p.test(command.trim()));
+}
+
+function appendAuditLog(command: string, allowed: boolean, exitCode: number | null) {
+  try {
+    const timestamp = new Date().toISOString();
+    const status = exitCode !== null ? `exit=${exitCode}` : 'blocked';
+    const entry = `[${timestamp}] ${allowed ? 'EXEC' : 'BLOCKED'} (${status}): ${command}\n`;
+    fs.appendFileSync(AUDIT_LOG_PATH, entry, 'utf-8');
+  } catch {
+    // Non-fatal: audit log write failure should not break terminal
+  }
+}
 
 export class TerminalCommandHandler {
   constructor(
@@ -15,44 +83,29 @@ export class TerminalCommandHandler {
   private registerHandlers() {
     this.router.register('EXECUTE_COMMAND', async (msg, ws) => {
       this.log(`Executing command: ${msg.command}`);
-      
       const cmdTrimmed = msg.command.trim();
-      const allowedPatterns = [
-        /^npm\s+/,
-        /^yarn\s+/,
-        /^git\s+/,
-        /^ls\s*/,
-        /^cat\s+/,
-        /^pwd\s*/,
-        /^echo\s+/,
-        /^mkdir\s+/
-      ];
 
-      const isAllowed = allowedPatterns.some(pattern => pattern.test(cmdTrimmed));
-      if (!isAllowed && !cmdTrimmed.startsWith('rm ')) {
-        this.log(`Command rejected by allowlist: ${msg.command}`);
+      // VULN-V2-001: Check denylist first, then allowlist
+      if (isDangerous(cmdTrimmed)) {
+        this.log(`Command rejected by denylist (dangerous): ${msg.command}`);
+        appendAuditLog(msg.command, false, null);
         this.connectionManager.broadcast({
           type: 'COMMAND_OUTPUT',
-          text: `Error: Command not in allowlist.\n`,
+          text: `Error: Command contains dangerous pattern and is not permitted.\n`,
           isError: true
         });
         return;
       }
 
-      if (cmdTrimmed.startsWith('rm ')) {
-        const answer = await vscode.window.showWarningMessage(
-          `Antimatter: Execute destructive command "${msg.command}"?`,
-          { modal: true },
-          'Execute', 'Cancel'
-        );
-        if (answer !== 'Execute') {
-          this.connectionManager.broadcast({
-            type: 'COMMAND_OUTPUT',
-            text: `Command execution cancelled by user.\n`,
-            isError: true
-          });
-          return;
-        }
+      if (!isCommandAllowed(cmdTrimmed)) {
+        this.log(`Command rejected by allowlist: ${msg.command}`);
+        appendAuditLog(msg.command, false, null);
+        this.connectionManager.broadcast({
+          type: 'COMMAND_OUTPUT',
+          text: `Error: Command not in allowlist. Allowed: npm, yarn, git, ls, cat, pwd, echo, mkdir, touch, cp, mv, grep, find, node, python, pip, gradle, make.\n`,
+          isError: true
+        });
+        return;
       }
 
       try {
@@ -90,6 +143,7 @@ export class TerminalCommandHandler {
         
         child.on('close', (code) => {
           clearTimeout(timeoutTimer);
+          appendAuditLog(msg.command, true, code);
           this.connectionManager.broadcast({
             type: 'COMMAND_OUTPUT',
             text: `\n[Process exited with code ${code}]\n`,

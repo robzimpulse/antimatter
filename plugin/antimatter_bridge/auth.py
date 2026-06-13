@@ -42,7 +42,11 @@ class AuthHandler:
             ).decode("utf-8")
 
         with open(CONFIG_FILE, "w") as f:
-            json.dump(config, f)
+            json.dump(config, f, indent=2)
+        # VULN-V3-001: Restrict config file to owner read/write only (chmod 600)
+        # Prevents other users on multi-user systems from reading credentials
+        import stat
+        os.chmod(CONFIG_FILE, stat.S_IRUSR | stat.S_IWUSR)
 
         # Extract raw 32-byte public key
         pub_der = self.private_key.public_key().public_bytes(

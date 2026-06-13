@@ -39,6 +39,10 @@
 # Room
 -keep class androidx.room.** { *; }
 -keep class * extends androidx.room.RoomDatabase { *; }
+# VULN-V3-003: Keep Room @Entity and @Dao classes which are accessed via reflection
+-keep @androidx.room.Entity class * { *; }
+-keep @androidx.room.Dao class * { *; }
+-keepclassmembers @androidx.room.Entity class * { *; }
 
 # Cryptography / Ed25519
 -keep class java.security.** { *; }

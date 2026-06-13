@@ -4,3 +4,4 @@ Date,Workflow,Status,Commit,URL
 2026-06-13 11:27,npm_and_yarn in /extension for esbuild - Update #1411136779,❌ FAIL,fix: replace heredoc with echo to prevent YAML indentation errors,https://github.com/saifmukhtar/antimatter/actions/runs/27465427373
 2026-06-13 11:27,Android CI,✅ PASS,fix: replace heredoc with echo to prevent YAML indentation errors,https://github.com/saifmukhtar/antimatter/actions/runs/27465425661
 2026-06-13 11:28,CodeQL Advanced,✅ PASS,docs: add DeepWiki and social badges to README,https://github.com/saifmukhtar/antimatter/actions/runs/27465239027
+2026-06-13 11:28,Android CI,✅ PASS,Merge pull request #2 from saifmukhtar/dependabot/npm_and_yarn/extension/esbuild-0.28.1,https://github.com/saifmukhtar/antimatter/actions/runs/27465452495

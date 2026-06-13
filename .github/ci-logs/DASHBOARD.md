@@ -1,19 +1,20 @@
 # 🔄 CI/CD WORKFLOW DASHBOARD
 
-![Pass Rate](https://img.shields.io/badge/Pass%20Rate-60%25-brightgreen)
-![Total Runs](https://img.shields.io/badge/Total%20Runs-5-blue)
+![Pass Rate](https://img.shields.io/badge/Pass%20Rate-66%25-brightgreen)
+![Total Runs](https://img.shields.io/badge/Total%20Runs-6-blue)
 
 | Metric | Count |
 |--------|-------|
-| **Total Runs** | 5 |
-| **Passed** | 3 |
+| **Total Runs** | 6 |
+| **Passed** | 4 |
 | **Failed** | 2 |
-| **Pass Rate** | 60% |
+| **Pass Rate** | 66% |
 
 ## Recent Runs
 
 | Date (UTC) | Workflow | Status | Commit | URL |
 |------------|----------|--------|--------|-----|
+| 2026-06-13 11:28 | Android CI | ✅ PASS | Merge pull request #2 from saifmukhtar/dependabot/npm_and_yarn/extension/esbuild-0.28.1 | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27465452495) |
 | 2026-06-13 11:28 | CodeQL Advanced | ✅ PASS | docs: add DeepWiki and social badges to README | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27465239027) |
 | 2026-06-13 11:27 | Android CI | ✅ PASS | fix: replace heredoc with echo to prevent YAML indentation errors | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27465425661) |
 | 2026-06-13 11:27 | npm_and_yarn in /extension for esbuild - Update #1411136779 | ❌ FAIL | fix: replace heredoc with echo to prevent YAML indentation errors | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27465427373) |

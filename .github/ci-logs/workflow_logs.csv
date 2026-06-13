@@ -14,3 +14,4 @@ Date,Workflow,Status,Commit,URL
 2026-06-13 11:40,Android CI,✅ PASS,fix(python): correct invalid PyPI classifier in pyproject.toml,https://github.com/saifmukhtar/antimatter/actions/runs/27465693640
 2026-06-13 11:43,CI,✅ PASS,fix(python): correct invalid PyPI classifier in pyproject.toml,https://github.com/saifmukhtar/antimatter/actions/runs/27465693645
 2026-06-13 11:48,CodeQL Advanced,✅ PASS,fix(python): correct invalid PyPI classifier in pyproject.toml,https://github.com/saifmukhtar/antimatter/actions/runs/27465693612
+2026-06-13 12:12,Extension CI,✅ PASS,security: fix CodeQL vulnerabilities (injection auth permissions logs),https://github.com/saifmukhtar/antimatter/actions/runs/27466414671

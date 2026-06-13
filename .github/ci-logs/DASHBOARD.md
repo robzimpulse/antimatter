@@ -1,19 +1,20 @@
 # 🔄 CI/CD WORKFLOW DASHBOARD
 
-![Pass Rate](https://img.shields.io/badge/Pass%20Rate-66%25-brightgreen)
-![Total Runs](https://img.shields.io/badge/Total%20Runs-15-blue)
+![Pass Rate](https://img.shields.io/badge/Pass%20Rate-68%25-brightgreen)
+![Total Runs](https://img.shields.io/badge/Total%20Runs-16-blue)
 
 | Metric | Count |
 |--------|-------|
-| **Total Runs** | 15 |
-| **Passed** | 10 |
+| **Total Runs** | 16 |
+| **Passed** | 11 |
 | **Failed** | 4 |
-| **Pass Rate** | 66% |
+| **Pass Rate** | 68% |
 
 ## Recent Runs
 
 | Date (UTC) | Workflow | Status | Commit | URL |
 |------------|----------|--------|--------|-----|
+| 2026-06-13 12:12 | Extension CI | ✅ PASS | security: fix CodeQL vulnerabilities (injection auth permissions logs) | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27466414671) |
 | 2026-06-13 11:48 | CodeQL Advanced | ✅ PASS | fix(python): correct invalid PyPI classifier in pyproject.toml | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27465693612) |
 | 2026-06-13 11:43 | CI | ✅ PASS | fix(python): correct invalid PyPI classifier in pyproject.toml | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27465693645) |
 | 2026-06-13 11:40 | Android CI | ✅ PASS | fix(python): correct invalid PyPI classifier in pyproject.toml | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27465693640) |

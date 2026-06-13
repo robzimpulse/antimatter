@@ -1,3 +1,4 @@
 Date,Workflow,Status,Commit,URL
 2026-06-13 11:26,Python CI,❌ FAIL,fix: replace heredoc with echo to prevent YAML indentation errors,https://github.com/saifmukhtar/antimatter/actions/runs/27465425674
 2026-06-13 11:26,Extension CI,✅ PASS,fix: replace heredoc with echo to prevent YAML indentation errors,https://github.com/saifmukhtar/antimatter/actions/runs/27465425675
+2026-06-13 11:27,npm_and_yarn in /extension for esbuild - Update #1411136779,❌ FAIL,fix: replace heredoc with echo to prevent YAML indentation errors,https://github.com/saifmukhtar/antimatter/actions/runs/27465427373

@@ -30,7 +30,7 @@ public struct ConnectView: View {
                         .font(.system(.largeTitle, design: .rounded).bold())
                         .foregroundColor(AntimatterTheme.textPrimary)
                     
-                    Text("Enter your pairing token to connect to your local agent.")
+                    Text("Scan the QR code or enter your connection URL.")
                         .font(.subheadline)
                         .foregroundColor(AntimatterTheme.textSecondary)
                         .multilineTextAlignment(.center)
@@ -38,13 +38,26 @@ public struct ConnectView: View {
                 }
                 
                 VStack(spacing: 16) {
-                    TextField("Pairing Token", text: $viewModel.inputToken)
-                        .padding()
-                        .background(AntimatterTheme.secondary)
-                        .cornerRadius(12)
-                        .foregroundColor(AntimatterTheme.textPrimary)
-                        .autocapitalization(.none)
-                        .disableAutocorrection(true)
+                    HStack {
+                        TextField("Connection URL", text: $viewModel.inputToken)
+                            .padding()
+                            .background(AntimatterTheme.secondary)
+                            .cornerRadius(12)
+                            .foregroundColor(AntimatterTheme.textPrimary)
+                            .autocapitalization(.none)
+                            .disableAutocorrection(true)
+                        
+                        Button(action: {
+                            viewModel.showScanner = true
+                        }) {
+                            Image(systemName: "qrcode.viewfinder")
+                                .font(.title2)
+                                .padding()
+                                .background(AntimatterTheme.secondary)
+                                .cornerRadius(12)
+                                .foregroundColor(AntimatterTheme.primary)
+                        }
+                    }
                     
                     if let error = viewModel.errorMessage {
                         Text(error)
@@ -73,6 +86,23 @@ public struct ConnectView: View {
                 .padding(.horizontal, 24)
                 
                 Spacer()
+            }
+        }
+        .sheet(isPresented: $viewModel.showScanner) {
+            ZStack(alignment: .topTrailing) {
+                QRScannerView { code in
+                    viewModel.handleScannedCode(code)
+                }
+                .ignoresSafeArea()
+                
+                Button(action: {
+                    viewModel.showScanner = false
+                }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.largeTitle)
+                        .foregroundColor(.white)
+                        .padding()
+                }
             }
         }
     }

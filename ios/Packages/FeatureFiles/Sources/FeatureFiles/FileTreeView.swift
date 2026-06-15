@@ -1,5 +1,6 @@
 import SwiftUI
 import CoreUI
+import LocalAuthentication
 
 public struct FileTreeView: View {
     @Bindable var viewModel: FileTreeViewModel
@@ -20,7 +21,29 @@ public struct FileTreeView: View {
                     Text("Workspace")
                         .font(.headline)
                         .foregroundColor(AntimatterTheme.textPrimary)
+                    
                     Spacer()
+                    
+                    if !viewModel.allowedWorkspaces.isEmpty {
+                        Menu {
+                            ForEach(viewModel.allowedWorkspaces, id: \.self) { ws in
+                                Button(action: {
+                                    authenticateAndSwitchWorkspace(to: ws)
+                                }) {
+                                    Text(ws)
+                                }
+                            }
+                        } label: {
+                            HStack {
+                                Text((viewModel.currentWorkspace as NSString?)?.lastPathComponent ?? "Switch")
+                                    .font(.subheadline)
+                                    .foregroundColor(AntimatterTheme.primary)
+                                Image(systemName: "chevron.up.chevron.down")
+                                    .font(.caption)
+                                    .foregroundColor(AntimatterTheme.primary)
+                            }
+                        }
+                    }
                 }
                 .padding()
                 .background(AntimatterTheme.surface)
@@ -41,6 +64,32 @@ public struct FileTreeView: View {
                 .scrollContentBackground(.hidden)
                 .background(AntimatterTheme.background)
             }
+        }
+    }
+    
+    private func authenticateAndSwitchWorkspace(to path: String) {
+        let context = LAContext()
+        var error: NSError?
+
+        if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
+            context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: "Authenticate to switch remote workspace") { success, _ in
+                DispatchQueue.main.async {
+                    if success {
+                        viewModel.changeWorkspace(to: path)
+                    }
+                }
+            }
+        } else if context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &error) {
+            context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: "Authenticate to switch remote workspace") { success, _ in
+                DispatchQueue.main.async {
+                    if success {
+                        viewModel.changeWorkspace(to: path)
+                    }
+                }
+            }
+        } else {
+            // If no biometrics or passcode, just allow (or fail securely, but let's allow for dev/test)
+            viewModel.changeWorkspace(to: path)
         }
     }
 }

@@ -2,7 +2,6 @@ import SwiftUI
 import Observation
 import FeatureConnect
 import FeatureChat
-import FeatureTerminal
 import FeatureFiles
 import CoreData
 import CoreUI
@@ -24,11 +23,7 @@ public struct AppCoordinator: View {
                         }
                         .tag(0)
                     
-                    TerminalView()
-                        .tabItem {
-                            Label("Terminal", systemImage: "terminal.fill")
-                        }
-                        .tag(1)
+
                     
                     FileTreeView()
                         .tabItem {

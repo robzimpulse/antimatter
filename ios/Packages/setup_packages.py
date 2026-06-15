@@ -8,7 +8,7 @@ packages = {
     'CoreUI': [],
     'FeatureConnect': ['CoreNetwork', 'CoreData', 'CoreUI'],
     'FeatureChat': ['CoreNetwork', 'CoreData', 'CoreUI'],
-    'FeatureTerminal': ['CoreNetwork', 'CoreUI'],
+
     'FeatureFiles': ['CoreNetwork', 'CoreUI']
 }
 

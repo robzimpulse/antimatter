@@ -6,7 +6,7 @@ packages_dir = '/home/saif/antimatter/ios/Packages'
 deps_map = {
     'FeatureChat': ['CoreNetwork', 'CoreData', 'CoreUI'],
     'FeatureConnect': ['CoreNetwork', 'CoreData', 'CoreUI'],
-    'FeatureTerminal': ['CoreNetwork', 'CoreUI'],
+
     'FeatureFiles': ['CoreNetwork', 'CoreUI'],
     'CoreNetwork': [],
     'CoreData': [],

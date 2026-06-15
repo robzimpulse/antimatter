@@ -51,3 +51,4 @@ Date,Workflow,Status,Commit,URL
 2026-06-15 22:39,Android CI,✅ PASS,docs: integrate custom logo Mermaid diagram support and update feature highlights,https://github.com/saifmukhtar/antimatter/actions/runs/27581014177
 2026-06-15 22:46,CodeQL Advanced,✅ PASS,Merge pull request #3 from saifmukhtar/dependabot/npm_and_yarn/adapters/ag/form-data-4.0.6,https://github.com/saifmukhtar/antimatter/actions/runs/27580907050
 2026-06-15 22:46,iOS CI,✅ PASS,build: force js-yaml update to v4.2.0 via overrides to fix dependabot vulnerability alert,https://github.com/saifmukhtar/antimatter/actions/runs/27581377524
+2026-06-15 22:46,Adapters CI,✅ PASS,build: force js-yaml update to v4.2.0 via overrides to fix dependabot vulnerability alert,https://github.com/saifmukhtar/antimatter/actions/runs/27581377512

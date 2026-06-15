@@ -37,3 +37,4 @@ Date,Workflow,Status,Commit,URL
 2026-06-15 20:47,CodeQL Advanced,❌ FAIL,Fix: Remove outputs,https://github.com/saifmukhtar/antimatter/actions/runs/27574952288
 2026-06-15 20:50,CodeQL Advanced,❌ FAIL,chore(deps-dev): bump form-data from 4.0.5 to 4.0.6 in /adapters/ag,https://github.com/saifmukhtar/antimatter/actions/runs/27575026906
 2026-06-15 22:21,iOS CI,✅ PASS,feat: implement native PTY terminal for iOS Android and Gateway,https://github.com/saifmukhtar/antimatter/actions/runs/27580233232
+2026-06-15 22:21,Adapters CI,❌ FAIL,feat: implement native PTY terminal for iOS Android and Gateway,https://github.com/saifmukhtar/antimatter/actions/runs/27580233236

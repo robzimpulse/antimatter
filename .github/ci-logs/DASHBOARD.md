@@ -1,19 +1,20 @@
 # 🔄 CI/CD WORKFLOW DASHBOARD
 
-![Pass Rate](https://img.shields.io/badge/Pass%20Rate-65%25-brightgreen)
-![Total Runs](https://img.shields.io/badge/Total%20Runs-38-blue)
+![Pass Rate](https://img.shields.io/badge/Pass%20Rate-64%25-brightgreen)
+![Total Runs](https://img.shields.io/badge/Total%20Runs-39-blue)
 
 | Metric | Count |
 |--------|-------|
-| **Total Runs** | 38 |
+| **Total Runs** | 39 |
 | **Passed** | 25 |
-| **Failed** | 12 |
-| **Pass Rate** | 65% |
+| **Failed** | 13 |
+| **Pass Rate** | 64% |
 
 ## Recent Runs
 
 | Date (UTC) | Workflow | Status | Commit | URL |
 |------------|----------|--------|--------|-----|
+| 2026-06-15 22:21 | Adapters CI | ❌ FAIL | feat: implement native PTY terminal for iOS Android and Gateway | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27580233236) |
 | 2026-06-15 22:21 | iOS CI | ✅ PASS | feat: implement native PTY terminal for iOS Android and Gateway | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27580233232) |
 | 2026-06-15 20:50 | CodeQL Advanced | ❌ FAIL | chore(deps-dev): bump form-data from 4.0.5 to 4.0.6 in /adapters/ag | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27575026906) |
 | 2026-06-15 20:47 | CodeQL Advanced | ❌ FAIL | Fix: Remove outputs | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27574952288) |

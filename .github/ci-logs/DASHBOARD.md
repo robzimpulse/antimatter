@@ -1,19 +1,20 @@
 # 🔄 CI/CD WORKFLOW DASHBOARD
 
-![Pass Rate](https://img.shields.io/badge/Pass%20Rate-80%25-brightgreen)
-![Total Runs](https://img.shields.io/badge/Total%20Runs-26-blue)
+![Pass Rate](https://img.shields.io/badge/Pass%20Rate-77%25-brightgreen)
+![Total Runs](https://img.shields.io/badge/Total%20Runs-27-blue)
 
 | Metric | Count |
 |--------|-------|
-| **Total Runs** | 26 |
+| **Total Runs** | 27 |
 | **Passed** | 21 |
-| **Failed** | 4 |
-| **Pass Rate** | 80% |
+| **Failed** | 5 |
+| **Pass Rate** | 77% |
 
 ## Recent Runs
 
 | Date (UTC) | Workflow | Status | Commit | URL |
 |------------|----------|--------|--------|-----|
+| 2026-06-15 20:38 | Core CI | ❌ FAIL | Chore: Update Readme | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27574862489) |
 | 2026-06-14 09:11 | CodeQL Advanced | ✅ PASS | Future roadmap: Planning to support ios platform | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27494010402) |
 | 2026-06-14 09:04 | Android CI | ✅ PASS | Future roadmap: Planning to support ios platform | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27494010347) |
 | 2026-06-14 09:02 | Extension CI | ✅ PASS | Future roadmap: Planning to support ios platform | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27494010348) |

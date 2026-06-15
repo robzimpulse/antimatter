@@ -25,3 +25,4 @@ Date,Workflow,Status,Commit,URL
 2026-06-14 09:02,Extension CI,✅ PASS,Future roadmap: Planning to support ios platform,https://github.com/saifmukhtar/antimatter/actions/runs/27494010348
 2026-06-14 09:04,Android CI,✅ PASS,Future roadmap: Planning to support ios platform,https://github.com/saifmukhtar/antimatter/actions/runs/27494010347
 2026-06-14 09:11,CodeQL Advanced,✅ PASS,Future roadmap: Planning to support ios platform,https://github.com/saifmukhtar/antimatter/actions/runs/27494010402
+2026-06-15 20:38,Core CI,❌ FAIL,Chore: Update Readme,https://github.com/saifmukhtar/antimatter/actions/runs/27574862489

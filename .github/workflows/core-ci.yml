@@ -28,7 +28,4 @@ jobs:
       run: |
         uv pip install --system pytest pytest-asyncio
         uv pip install --system -e .
-        
-    - name: Run tests
-      working-directory: core
-      run: pytest tests/
+

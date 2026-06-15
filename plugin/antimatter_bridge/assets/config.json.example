@@ -1,7 +1,0 @@
-{
-    "pairing_token": "YOUR_32_BYTE_URLSAFE_BASE64_TOKEN_OR_LEAVE_BLANK_TO_AUTOGENERATE",
-    "private_key_pem": "-----BEGIN PRIVATE KEY-----\nYOUR_PEM_KEY_OR_LEAVE_BLANK_TO_AUTOGENERATE\n-----END PRIVATE KEY-----\n",
-    "cloudflare_url": "wss://my-tunnel.yourdomain.com",
-    "cloudflare_client_id": "dummy_client_id.access",
-    "cloudflare_client_secret": "dummy_client_secret_xyz123"
-}

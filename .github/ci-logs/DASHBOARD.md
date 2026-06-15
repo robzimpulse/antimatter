@@ -1,19 +1,20 @@
 # 🔄 CI/CD WORKFLOW DASHBOARD
 
-![Pass Rate](https://img.shields.io/badge/Pass%20Rate-66%25-brightgreen)
-![Total Runs](https://img.shields.io/badge/Total%20Runs-36-blue)
+![Pass Rate](https://img.shields.io/badge/Pass%20Rate-64%25-brightgreen)
+![Total Runs](https://img.shields.io/badge/Total%20Runs-37-blue)
 
 | Metric | Count |
 |--------|-------|
-| **Total Runs** | 36 |
+| **Total Runs** | 37 |
 | **Passed** | 24 |
-| **Failed** | 11 |
-| **Pass Rate** | 66% |
+| **Failed** | 12 |
+| **Pass Rate** | 64% |
 
 ## Recent Runs
 
 | Date (UTC) | Workflow | Status | Commit | URL |
 |------------|----------|--------|--------|-----|
+| 2026-06-15 20:50 | CodeQL Advanced | ❌ FAIL | chore(deps-dev): bump form-data from 4.0.5 to 4.0.6 in /adapters/ag | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27575026906) |
 | 2026-06-15 20:47 | CodeQL Advanced | ❌ FAIL | Fix: Remove outputs | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27574952288) |
 | 2026-06-15 20:45 | Android CI | ❌ FAIL | chore(deps-dev): bump form-data from 4.0.5 to 4.0.6 in /adapters/ag | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27575026885) |
 | 2026-06-15 20:44 | Android CI | ❌ FAIL | Fix: Remove outputs | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27574950598) |

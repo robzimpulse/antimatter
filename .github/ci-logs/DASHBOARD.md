@@ -1,19 +1,20 @@
 # 🔄 CI/CD WORKFLOW DASHBOARD
 
-![Pass Rate](https://img.shields.io/badge/Pass%20Rate-76%25-brightgreen)
-![Total Runs](https://img.shields.io/badge/Total%20Runs-30-blue)
+![Pass Rate](https://img.shields.io/badge/Pass%20Rate-74%25-brightgreen)
+![Total Runs](https://img.shields.io/badge/Total%20Runs-31-blue)
 
 | Metric | Count |
 |--------|-------|
-| **Total Runs** | 30 |
+| **Total Runs** | 31 |
 | **Passed** | 23 |
-| **Failed** | 6 |
-| **Pass Rate** | 76% |
+| **Failed** | 7 |
+| **Pass Rate** | 74% |
 
 ## Recent Runs
 
 | Date (UTC) | Workflow | Status | Commit | URL |
 |------------|----------|--------|--------|-----|
+| 2026-06-15 20:40 | Adapters CI | ❌ FAIL | Fix: Remove outputs | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27574951546) |
 | 2026-06-15 20:40 | Core CI | ❌ FAIL | Fix: Remove outputs | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27574950579) |
 | 2026-06-15 20:39 | Graph Update: pip in /adapters/ag2 |  /core |  /core/gateway | [View Log]( /core/shared-config, /core/shared-crypto, /core/shared-fs, /core/shared-protocol, /plugin #1414546487,✅ PASS,Chore: Update Readme,https://github.com/saifmukhtar/antimatter/actions/runs/27574861143) |
 | 2026-06-15 20:39 | Deploy Documentation | ✅ PASS | Chore: Update Readme | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27574862495) |

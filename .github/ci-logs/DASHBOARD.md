@@ -1,19 +1,20 @@
 # 🔄 CI/CD WORKFLOW DASHBOARD
 
-![Pass Rate](https://img.shields.io/badge/Pass%20Rate-64%25-brightgreen)
-![Total Runs](https://img.shields.io/badge/Total%20Runs-45-blue)
+![Pass Rate](https://img.shields.io/badge/Pass%20Rate-63%25-brightgreen)
+![Total Runs](https://img.shields.io/badge/Total%20Runs-46-blue)
 
 | Metric | Count |
 |--------|-------|
-| **Total Runs** | 45 |
+| **Total Runs** | 46 |
 | **Passed** | 29 |
 | **Failed** | 14 |
-| **Pass Rate** | 64% |
+| **Pass Rate** | 63% |
 
 ## Recent Runs
 
 | Date (UTC) | Workflow | Status | Commit | URL |
 |------------|----------|--------|--------|-----|
+| 2026-06-15 22:36 | npm_and_yarn in /adapters/ag for js-yaml - Update #1414808737 | ⚠️ CANCEL | Merge pull request #3 from saifmukhtar/dependabot/npm_and_yarn/adapters/ag/form-data-4.0.6 | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27580911135) |
 | 2026-06-15 22:36 | Android CI | ⚠️ CANCEL | Merge pull request #3 from saifmukhtar/dependabot/npm_and_yarn/adapters/ag/form-data-4.0.6 | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27580907090) |
 | 2026-06-15 22:35 | iOS CI | ✅ PASS | Merge pull request #3 from saifmukhtar/dependabot/npm_and_yarn/adapters/ag/form-data-4.0.6 | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27580907075) |
 | 2026-06-15 22:31 | CodeQL Advanced | ✅ PASS | feat: implement native PTY terminal for iOS Android and Gateway | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27580233296) |

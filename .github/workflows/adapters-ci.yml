@@ -1,0 +1,90 @@
+name: Adapters CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  test-ag:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+        cache-dependency-path: adapters/ag/package-lock.json
+
+    - name: Install dependencies
+      working-directory: adapters/ag
+      run: npm ci
+
+    - name: Lint
+      working-directory: adapters/ag
+      run: npm run lint
+
+    - name: Test
+      working-directory: adapters/ag
+      run: npm run test
+
+    - name: Build
+      working-directory: adapters/ag
+      run: npm run build --if-present
+
+    - name: Package VSIX
+      working-directory: adapters/ag
+      run: npm run package
+    
+    - name: Upload VSIX
+      uses: actions/upload-artifact@v4
+      with:
+        name: ag-extension-vsix
+        path: adapters/ag/*.vsix
+
+  test-ag2:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        
+    - name: Install uv
+      run: curl -LsSf https://astral.sh/uv/install.sh | sh
+        
+    - name: Install dependencies
+      working-directory: adapters/ag2
+      run: uv pip install --system -e .[test]
+        
+    - name: Run tests
+      working-directory: adapters/ag2
+      run: pytest tests/
+
+  test-cc:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+        cache-dependency-path: adapters/cc/package-lock.json
+
+    - name: Install dependencies
+      working-directory: adapters/cc
+      run: npm ci
+
+    - name: Build
+      working-directory: adapters/cc
+      run: npm run build --if-present

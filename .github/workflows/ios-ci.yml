@@ -1,0 +1,29 @@
+name: iOS CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Select Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+        
+    - name: Build iOS App
+      working-directory: ios
+      run: |
+        # Adjust xcodebuild command based on actual project structure
+        # xcodebuild clean build -project Antimatter.xcodeproj -scheme Antimatter -destination 'platform=iOS Simulator,name=iPhone 15'
+        echo "Xcodebuild placeholder (configure project/workspace)"

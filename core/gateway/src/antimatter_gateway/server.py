@@ -211,15 +211,45 @@ class GatewayServer:
         print_qr_to_terminal(payload)
         print("="*50)
 
-        async with websockets.serve(self.handler, "127.0.0.1", 8765):
+        async with websockets.serve(self.handler, "127.0.0.1", self.port):
             await asyncio.Future()
 
-async def main_async():
+async def main_async(port: int = 8765):
     server = GatewayServer()
+    server.port = port
     await server.start()
 
 def main():
-    asyncio.run(main_async())
+    import argparse
+    from antimatter_shared_config.config import load_config, save_config
+
+    parser = argparse.ArgumentParser(prog="antimatter", description="Antimatter E2EE Gateway")
+    parser.add_argument("--port", type=int, default=8765, help="Port to run the Gateway on")
+    
+    subparsers = parser.add_subparsers(dest="command")
+    
+    config_parser = subparsers.add_parser("config", help="Manage gateway configuration")
+    config_sub = config_parser.add_subparsers(dest="config_command")
+    
+    set_parser = config_sub.add_parser("set", help="Set a configuration key")
+    set_parser.add_argument("key", help="Configuration key to set")
+    set_parser.add_argument("value", help="Value to set")
+    
+    args = parser.parse_args()
+    
+    if args.command == "config":
+        if args.config_command == "set":
+            config = load_config()
+            if hasattr(config, args.key):
+                setattr(config, args.key, args.value)
+                save_config(config)
+                print(f"✅ Successfully set '{args.key}'")
+            else:
+                print(f"❌ Unknown config key: {args.key}")
+        return
+
+    # Otherwise, start the server
+    asyncio.run(main_async(args.port))
 
 if __name__ == "__main__":
     main()

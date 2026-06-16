@@ -53,3 +53,4 @@ Date,Workflow,Status,Commit,URL
 2026-06-15 22:46,iOS CI,✅ PASS,build: force js-yaml update to v4.2.0 via overrides to fix dependabot vulnerability alert,https://github.com/saifmukhtar/antimatter/actions/runs/27581377524
 2026-06-15 22:46,Adapters CI,✅ PASS,build: force js-yaml update to v4.2.0 via overrides to fix dependabot vulnerability alert,https://github.com/saifmukhtar/antimatter/actions/runs/27581377512
 2026-06-15 22:48,Android CI,✅ PASS,build: force js-yaml update to v4.2.0 via overrides to fix dependabot vulnerability alert,https://github.com/saifmukhtar/antimatter/actions/runs/27581377503
+2026-06-16 12:22,Core CI,✅ PASS,added new documenattion,https://github.com/saifmukhtar/antimatter/actions/runs/27617160632

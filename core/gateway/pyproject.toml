@@ -8,6 +8,7 @@ dependencies = [
     "antimatter-shared-config",
     "antimatter-shared-crypto",
     "antimatter-shared-protocol",
+    "antimatter-shared-fs",
     "ptyprocess>=0.7.0"
 ]
 
@@ -15,6 +16,7 @@ dependencies = [
 antimatter-shared-config = { workspace = true }
 antimatter-shared-crypto = { workspace = true }
 antimatter-shared-protocol = { workspace = true }
+antimatter-shared-fs = { workspace = true }
 
 [project.scripts]
 antimatter = "antimatter_gateway.server:main"

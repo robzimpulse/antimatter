@@ -39,6 +39,7 @@ source = { editable = "gateway" }
 dependencies = [
     { name = "antimatter-shared-config" },
     { name = "antimatter-shared-crypto" },
+    { name = "antimatter-shared-fs" },
     { name = "antimatter-shared-protocol" },
     { name = "ptyprocess" },
     { name = "qrcode" },
@@ -49,6 +50,7 @@ dependencies = [
 requires-dist = [
     { name = "antimatter-shared-config", editable = "shared-config" },
     { name = "antimatter-shared-crypto", editable = "shared-crypto" },
+    { name = "antimatter-shared-fs", editable = "shared-fs" },
     { name = "antimatter-shared-protocol", editable = "shared-protocol" },
     { name = "ptyprocess", specifier = ">=0.7.0" },
     { name = "qrcode", specifier = ">=7.4.2" },

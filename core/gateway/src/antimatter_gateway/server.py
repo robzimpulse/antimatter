@@ -28,7 +28,8 @@ def _record_failure(ip: str):
     _ip_failure_counts[ip] = data
 
 class GatewayServer:
-    def __init__(self):
+    def __init__(self, port: int = 8765):
+        self.port = port  # Default port; can be overridden before calling start()
         self.config = load_config()
         self.auth = Ed25519Auth(self.config.private_key_pem)
         self.router = MessageRouter(gateway=self)
@@ -38,12 +39,12 @@ class GatewayServer:
         
         # Persist keys if newly generated
         needs_save = False
-        if not self.config.private_key_pem:
+        if not self.config.private_key_pem or self.config.private_key_pem != self.auth.private_key_base64:
             self.config.private_key_pem = self.auth.private_key_base64
             self.config.pairing_token = self.auth.pairing_token
             needs_save = True
-        
-        if not self.config.gateway_priv_x25519:
+            
+        if not self.config.gateway_priv_x25519 or self.config.gateway_priv_x25519 != self.e2ee.private_key_b64:
             self.config.gateway_priv_x25519 = self.e2ee.private_key_b64
             needs_save = True
             
@@ -77,8 +78,6 @@ class GatewayServer:
                 
                 msg_type = data.get("type")
 
-                msg_type = data.get("type")
-
                 # Adapter Registration (Local IPC)
                 if msg_type == "REGISTER_ADAPTER":
                     agent_id = data.get("id")
@@ -101,13 +100,17 @@ class GatewayServer:
                         await websocket.close(1008, "Missing challenge")
                         return
                     
+                    logger.info(f"Received challenge: {challenge}")
                     sig = self.auth.sign_challenge(challenge)
-                    await websocket.send(json.dumps({"type": "AUTH_RESPONSE", "signature": sig}))
+                    logger.info(f"Generated signature: {sig}")
+                    
+                    await websocket.send(json.dumps({
+                        "type": "AUTH_RESPONSE", 
+                        "signature": sig,
+                        "pubkey": self.e2ee.public_key_b64
+                    }))
                     authenticated = True
                     logger.info(f"Client {ip} authenticated successfully.")
-                    
-                    # Add client to router once authenticated
-                    self.router.add_client(websocket)
                     continue
                 
                 if not authenticated:
@@ -126,6 +129,9 @@ class GatewayServer:
                     e2ee_established = True
                     logger.info("E2EE Session established (ECDH + HKDF).")
                     
+                    # Add client to router ONLY after E2EE is established
+                    self.router.add_client(websocket)
+                    
                     # Notify adapters
                     await self.router.broadcast_system_state()
                     continue
@@ -140,6 +146,7 @@ class GatewayServer:
                         # Decrypt client->server command
                         plaintext = self.e2ee.decrypt(data, expected_direction="cmd:")
                         parsed_cmd = json.loads(plaintext)
+                        logger.info(f"Decrypted command: {parsed_cmd}")
                         
                         # Route to local adapter via IPC
                         await self.router.route_to_adapter(parsed_cmd, self.e2ee, websocket)
@@ -151,7 +158,10 @@ class GatewayServer:
                     logger.warning("Unencrypted message received post-handshake. Dropping.")
 
         except ConnectionClosed:
-            logger.info(f"Connection closed: {ip}")
+            if authenticated or e2ee_established:
+                logger.info(f"Connection closed: {ip}")
+        except Exception as e:
+            logger.exception(f"Unhandled exception in websocket handler for {ip}: {e}")
         finally:
             self.router.remove_client(websocket)
 
@@ -207,13 +217,17 @@ class GatewayServer:
             await asyncio.Future()
 
 async def main_async(port: int = 8765):
-    server = GatewayServer()
-    server.port = port
+    server = GatewayServer(port=port)
     await server.start()
 
 def main():
     import argparse
     from antimatter_shared_config.config import load_config, save_config
+
+    logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
+
+    # Suppress verbose websocket connection errors (e.g. EOFError during Cloudflare TCP health checks)
+    logging.getLogger("websockets.server").setLevel(logging.CRITICAL)
 
     parser = argparse.ArgumentParser(prog="antimatter", description="Antimatter E2EE Gateway")
     parser.add_argument("--port", type=int, default=8765, help="Port to run the Gateway on")

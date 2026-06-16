@@ -8,7 +8,8 @@ def generate_qr_payload(
     cloudflare_url: str | None,
     pairing_token: str,
     gateway_x25519_pub: str,
-    client_id: str | None = None
+    client_id: str | None = None,
+    client_secret: str | None = None
 ) -> str:
     """
     Generates the canonical Deep Link payload for Android pairing.
@@ -23,8 +24,25 @@ def generate_qr_payload(
         "x25519_pub": gateway_x25519_pub
     }
     
-    if client_id:
-        params["cid"] = client_id
+    if client_id and client_secret:
+        import hashlib
+        import os
+        import json
+        import base64
+        from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+        
+        key = hashlib.sha256(pairing_token.encode("utf-8")).digest()
+        aesgcm = AESGCM(key)
+        cf_payload = json.dumps({"id": client_id, "secret": client_secret}).encode("utf-8")
+        
+        iv = os.urandom(12)
+        encrypted_data = aesgcm.encrypt(iv, cf_payload, None)
+        ciphertext = encrypted_data[:-16]
+        auth_tag = encrypted_data[-16:]
+        
+        params["cfenc"] = f"{base64.b64encode(iv).decode('utf-8')}:{base64.b64encode(auth_tag).decode('utf-8')}:{base64.b64encode(ciphertext).decode('utf-8')}"
+    elif client_id:
+        params["client_id"] = client_id
         
     query = urllib.parse.urlencode(params)
     return f"{base_url}?{query}"
@@ -42,16 +60,7 @@ def main():
     import socket
     import sys
     
-    # Check if the gateway is running locally
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.settimeout(1.0)
-    try:
-        s.connect(("127.0.0.1", 8765))
-        s.close()
-    except (socket.timeout, ConnectionRefusedError):
-        print("\n[ERROR] The Antimatter Gateway is not running!")
-        print("Please start it first by running: uv run antimatter\n")
-        sys.exit(1)
+    # Server running check removed so users can generate QR codes anytime
 
     from antimatter_shared_config.config import load_config
     config = load_config()
@@ -71,11 +80,17 @@ def main():
         if ephemeral.exists():
             tunnel_url = ephemeral.read_text().strip()
 
+    from antimatter_crypto.auth import Ed25519Auth
+    auth = Ed25519Auth(config.private_key_pem)
+    import base64
+    ed25519_pub_b64 = base64.b64encode(auth.public_key_raw).decode('utf-8')
+
     payload = generate_qr_payload(
         cloudflare_url=tunnel_url,
         pairing_token=config.pairing_token,
-        gateway_x25519_pub=e2ee.public_key_b64,
-        client_id=config.cloudflare_client_id
+        gateway_x25519_pub=ed25519_pub_b64,
+        client_id=config.cloudflare_client_id,
+        client_secret=config.cloudflare_client_secret
     )
     
     print("\n" + "="*50)

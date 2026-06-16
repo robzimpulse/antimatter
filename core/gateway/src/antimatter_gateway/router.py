@@ -81,6 +81,44 @@ class MessageRouter:
             self.pty_manager.ping(session_id)
             return
 
+        # Internal commands that can optionally apply to an adapter, but work natively too
+        if cmd_type == "CHANGE_WORKSPACE":
+            new_path = parsed_cmd.get("path")
+            agent_id = parsed_cmd.get("agentId")
+            if new_path in self.gateway.config.allowed_workspaces:
+                if agent_id and agent_id in self.adapters:
+                    self.adapters[agent_id]["workspace_root"] = new_path
+                    logger.info(f"Workspace for agent {agent_id} changed to {new_path}")
+                else:
+                    self.current_workspace = new_path
+                    logger.info(f"Native gateway workspace changed to {new_path}")
+                await self.broadcast_system_state()
+            else:
+                logger.warning(f"Rejected workspace change: {new_path} is not in allowed_workspaces")
+            return
+            
+        if cmd_type == "GET_FILES":
+            from antimatter_fs.tree import build_file_tree
+            agent_id = parsed_cmd.get("agentId")
+            if agent_id and agent_id in self.adapters:
+                root_path = self.adapters[agent_id].get("workspace_root") or getattr(self, "current_workspace", ".")
+            else:
+                root_path = getattr(self, "current_workspace", ".")
+                
+            tree = await build_file_tree(root_path)
+            
+            tree_dict = []
+            for node in tree:
+                d = node.model_dump()
+                d["isDir"] = d.pop("is_directory", False)
+                tree_dict.append(d)
+            
+            await self.broadcast_to_clients({
+                "type": "FILE_TREE",
+                "tree": tree_dict
+            }, e2ee)
+            return
+
         # Commands routed to specific agents
         agent_id = parsed_cmd.get("agentId")
         if not agent_id:
@@ -92,34 +130,6 @@ class MessageRouter:
             logger.warning(f"Target agent {agent_id} is offline. Dropping command.")
             return
 
-        cmd_type = parsed_cmd.get("type")
-        
-        if cmd_type == "CHANGE_WORKSPACE":
-            new_path = parsed_cmd.get("path")
-            if new_path in self.gateway.config.allowed_workspaces:
-                adapter["workspace_root"] = new_path
-                logger.info(f"Workspace for agent {agent_id} changed to {new_path}")
-                await self.broadcast_system_state()
-            else:
-                logger.warning(f"Rejected workspace change: {new_path} is not in allowed_workspaces")
-            return
-            
-        if cmd_type == "GET_FILES":
-            # Intercept GET_FILES and use shared-fs
-            from antimatter_fs.tree import build_file_tree
-            root_path = adapter.get("workspace_root") or "."
-            tree = await build_file_tree(root_path)
-            
-            # Serialize the dataclasses correctly
-            import dataclasses
-            tree_dict = [dataclasses.asdict(node) for node in tree]
-            
-            await self.broadcast_to_clients({
-                "type": "FILE_TREE",
-                "tree": tree_dict
-            }, e2ee)
-            return
-            
         try:
             await adapter["ws"].send(json.dumps(parsed_cmd))
         except Exception as e:

@@ -191,25 +191,17 @@ class GatewayServer:
                 try:
                     await asyncio.wait_for(self.cf_manager.ready_event.wait(), timeout=15.0)
                     tunnel_url = self.cf_manager.url
+                    import os
+                    from pathlib import Path
+                    ephemeral = Path(os.path.expanduser("~/.antimatter_daemon/ephemeral_tunnel.txt"))
+                    ephemeral.parent.mkdir(parents=True, exist_ok=True)
+                    if tunnel_url:
+                        ephemeral.write_text(tunnel_url)
                 except asyncio.TimeoutError:
                     logger.warning("Quick tunnel timeout.")
         
-        payload = generate_qr_payload(
-            cloudflare_url=tunnel_url,
-            pairing_token=self.auth.pairing_token,
-            gateway_x25519_pub=self.e2ee.public_key_b64,
-            client_id=self.config.cloudflare_client_id
-        )
-        
-        print("\n" + "="*50)
-        print("ANTIMATTER E2EE GATEWAY SECURE PAIRING")
-        print("="*50)
-        if tunnel_url:
-            print(f"\nTunnel: {tunnel_url}")
-        
-        print("\nScan this QR Code with the Antimatter App:\n")
-        print_qr_to_terminal(payload)
-        print("="*50)
+        logger.info(f"Gateway running. Access via: {tunnel_url or 'ws://127.0.0.1:' + str(self.port)}")
+        logger.info("Run 'antimatter qr' to view the pairing code.")
 
         async with websockets.serve(self.handler, "127.0.0.1", self.port):
             await asyncio.Future()
@@ -231,6 +223,9 @@ def main():
     # Interactive Setup Command
     setup_parser = subparsers.add_parser("setup", help="Interactive setup for Cloudflare Zero Trust")
     
+    # QR Command
+    qr_parser = subparsers.add_parser("qr", help="Show the pairing QR code and exit")
+
     # Config Command
     config_parser = subparsers.add_parser("config", help="Manage gateway configuration")
     config_sub = config_parser.add_subparsers(dest="config_command")
@@ -268,6 +263,11 @@ def main():
             
         save_config(config)
         print("\n✅ Configuration saved securely!")
+        return
+
+    if args.command == "qr":
+        from antimatter_gateway.qr import main as qr_main
+        qr_main()
         return
 
     if args.command == "config":

@@ -50,8 +50,16 @@ def main():
     from antimatter_crypto.e2ee import E2EESession
     e2ee = E2EESession(role="gateway", private_key_b64=config.gateway_priv_x25519)
     
+    tunnel_url = config.cloudflare_url
+    if not tunnel_url:
+        import os
+        from pathlib import Path
+        ephemeral = Path(os.path.expanduser("~/.antimatter_daemon/ephemeral_tunnel.txt"))
+        if ephemeral.exists():
+            tunnel_url = ephemeral.read_text().strip()
+
     payload = generate_qr_payload(
-        cloudflare_url=config.cloudflare_url,
+        cloudflare_url=tunnel_url,
         pairing_token=config.pairing_token,
         gateway_x25519_pub=e2ee.public_key_b64,
         client_id=config.cloudflare_client_id
@@ -60,8 +68,8 @@ def main():
     print("\n" + "="*50)
     print("ANTIMATTER E2EE GATEWAY SECURE PAIRING")
     print("="*50)
-    if config.cloudflare_url:
-        print(f"\nTunnel: {config.cloudflare_url}")
+    if tunnel_url:
+        print(f"\nTunnel: {tunnel_url}")
     
     print("\nScan this QR Code with the Antimatter App:\n")
     print_qr_to_terminal(payload)

@@ -39,13 +39,26 @@ def print_qr_to_terminal(payload: str) -> None:
         logger.warning("Failed to print ASCII QR. Terminal might not support it.")
 
 def main():
+    import socket
+    import sys
+    
+    # Check if the gateway is running locally
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.settimeout(1.0)
+    try:
+        s.connect(("127.0.0.1", 8765))
+        s.close()
+    except (socket.timeout, ConnectionRefusedError):
+        print("\n[ERROR] The Antimatter Gateway is not running!")
+        print("Please start it first by running: uv run antimatter\n")
+        sys.exit(1)
+
     from antimatter_shared_config.config import load_config
     config = load_config()
     if not config.gateway_priv_x25519 or not config.pairing_token:
         print("Error: Gateway not initialized. Please run 'antimatter-gateway' first.")
         return
-        
-    # We construct the public key from the private key if needed, or simply assume it's in config
+
     # Actually, E2EESession handles derivation.
     from antimatter_crypto.e2ee import E2EESession
     e2ee = E2EESession(role="gateway", private_key_b64=config.gateway_priv_x25519)

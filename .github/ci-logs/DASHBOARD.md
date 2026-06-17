@@ -1,19 +1,20 @@
 # 🔄 CI/CD WORKFLOW DASHBOARD
 
-![Pass Rate](https://img.shields.io/badge/Pass%20Rate-67%25-brightgreen)
-![Total Runs](https://img.shields.io/badge/Total%20Runs-56-blue)
+![Pass Rate](https://img.shields.io/badge/Pass%20Rate-68%25-brightgreen)
+![Total Runs](https://img.shields.io/badge/Total%20Runs-57-blue)
 
 | Metric | Count |
 |--------|-------|
-| **Total Runs** | 56 |
-| **Passed** | 38 |
+| **Total Runs** | 57 |
+| **Passed** | 39 |
 | **Failed** | 15 |
-| **Pass Rate** | 67% |
+| **Pass Rate** | 68% |
 
 ## Recent Runs
 
 | Date (UTC) | Workflow | Status | Commit | URL |
 |------------|----------|--------|--------|-----|
+| 2026-06-17 08:33 | iOS CI | ✅ PASS | Chore: Added proper license and deleted unused files | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27676314040) |
 | 2026-06-16 12:26 | Android CI | ✅ PASS | added new documenattion | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27617160728) |
 | 2026-06-16 12:22 | Core CI | ✅ PASS | added new documenattion | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27617160632) |
 | 2026-06-15 22:48 | Android CI | ✅ PASS | build: force js-yaml update to v4.2.0 via overrides to fix dependabot vulnerability alert | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27581377503) |
@@ -63,4 +64,3 @@
 | 2026-06-13 11:35 | CodeQL Advanced | ✅ PASS | fix: replace heredoc with echo to prevent YAML indentation errors | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27465425685) |
 | 2026-06-13 11:33 | CodeQL Advanced | ⚠️ CANCEL | Merge pull request #2 from saifmukhtar/dependabot/npm_and_yarn/extension/esbuild-0.28.1 | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27465452484) |
 | 2026-06-13 11:32 | CI | ❌ FAIL | Merge pull request #2 from saifmukhtar/dependabot/npm_and_yarn/extension/esbuild-0.28.1 | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27465452489) |
-| 2026-06-13 11:30 | CI | ❌ FAIL | fix: replace heredoc with echo to prevent YAML indentation errors | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27465425670) |

@@ -1,19 +1,20 @@
 # 🔄 CI/CD WORKFLOW DASHBOARD
 
-![Pass Rate](https://img.shields.io/badge/Pass%20Rate-68%25-brightgreen)
-![Total Runs](https://img.shields.io/badge/Total%20Runs-61-blue)
+![Pass Rate](https://img.shields.io/badge/Pass%20Rate-69%25-brightgreen)
+![Total Runs](https://img.shields.io/badge/Total%20Runs-62-blue)
 
 | Metric | Count |
 |--------|-------|
-| **Total Runs** | 61 |
-| **Passed** | 42 |
+| **Total Runs** | 62 |
+| **Passed** | 43 |
 | **Failed** | 16 |
-| **Pass Rate** | 68% |
+| **Pass Rate** | 69% |
 
 ## Recent Runs
 
 | Date (UTC) | Workflow | Status | Commit | URL |
 |------------|----------|--------|--------|-----|
+| 2026-06-17 08:35 | Adapters CI | ✅ PASS | chore(deps): bump astro @astrojs/starlight and @astrojs/starlight-tailwind | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27676403146) |
 | 2026-06-17 08:35 | Core CI | ✅ PASS | chore(deps): bump astro @astrojs/starlight and @astrojs/starlight-tailwind | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27676402977) |
 | 2026-06-17 08:35 | npm_and_yarn in /docs for astro - Update #1418668986 | ✅ PASS | Chore: Added proper license and deleted unused files | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27676324662) |
 | 2026-06-17 08:34 | npm_and_yarn in /docs for esbuild - Update #1418669298 | ❌ FAIL | Chore: Added proper license and deleted unused files | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27676328903) |
@@ -63,4 +64,3 @@
 | 2026-06-13 11:48 | CodeQL Advanced | ✅ PASS | fix(python): correct invalid PyPI classifier in pyproject.toml | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27465693612) |
 | 2026-06-13 11:43 | CI | ✅ PASS | fix(python): correct invalid PyPI classifier in pyproject.toml | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27465693645) |
 | 2026-06-13 11:40 | Android CI | ✅ PASS | fix(python): correct invalid PyPI classifier in pyproject.toml | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27465693640) |
-| 2026-06-13 11:39 | Graph Update: pip in /plugin #1411139512 | ✅ PASS | fix(python): correct invalid PyPI classifier in pyproject.toml | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27465694048) |

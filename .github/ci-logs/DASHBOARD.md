@@ -1,19 +1,20 @@
 # 🔄 CI/CD WORKFLOW DASHBOARD
 
-![Pass Rate](https://img.shields.io/badge/Pass%20Rate-65%25-brightgreen)
-![Total Runs](https://img.shields.io/badge/Total%20Runs-72-blue)
+![Pass Rate](https://img.shields.io/badge/Pass%20Rate-64%25-brightgreen)
+![Total Runs](https://img.shields.io/badge/Total%20Runs-73-blue)
 
 | Metric | Count |
 |--------|-------|
-| **Total Runs** | 72 |
+| **Total Runs** | 73 |
 | **Passed** | 47 |
-| **Failed** | 22 |
-| **Pass Rate** | 65% |
+| **Failed** | 23 |
+| **Pass Rate** | 64% |
 
 ## Recent Runs
 
 | Date (UTC) | Workflow | Status | Commit | URL |
 |------------|----------|--------|--------|-----|
+| 2026-06-18 20:13 | Android CI | ❌ FAIL | chore(deps-dev): bump undici from 7.27.2 to 7.28.0 in /adapters/ag | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27786398876) |
 | 2026-06-18 20:11 | Android CI | ❌ FAIL | Chore: Adding leftover files | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27786288633) |
 | 2026-06-18 20:11 | iOS CI | ✅ PASS | chore(deps-dev): bump undici from 7.27.2 to 7.28.0 in /adapters/ag | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27786398715) |
 | 2026-06-18 20:10 | npm_and_yarn in /docs for esbuild - Update #1421784205 | ❌ FAIL | chore: update workflow dashboard | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27786348853) |
@@ -63,4 +64,3 @@
 | 2026-06-14 09:11 | CodeQL Advanced | ✅ PASS | Future roadmap: Planning to support ios platform | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27494010402) |
 | 2026-06-14 09:04 | Android CI | ✅ PASS | Future roadmap: Planning to support ios platform | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27494010347) |
 | 2026-06-14 09:02 | Extension CI | ✅ PASS | Future roadmap: Planning to support ios platform | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27494010348) |
-| 2026-06-14 09:01 | Python CI | ✅ PASS | Future roadmap: Planning to support ios platform | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27494010329) |

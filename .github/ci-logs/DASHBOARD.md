@@ -1,19 +1,20 @@
 # 🔄 CI/CD WORKFLOW DASHBOARD
 
-![Pass Rate](https://img.shields.io/badge/Pass%20Rate-67%25-brightgreen)
-![Total Runs](https://img.shields.io/badge/Total%20Runs-68-blue)
+![Pass Rate](https://img.shields.io/badge/Pass%20Rate-66%25-brightgreen)
+![Total Runs](https://img.shields.io/badge/Total%20Runs-69-blue)
 
 | Metric | Count |
 |--------|-------|
-| **Total Runs** | 68 |
+| **Total Runs** | 69 |
 | **Passed** | 46 |
-| **Failed** | 19 |
-| **Pass Rate** | 67% |
+| **Failed** | 20 |
+| **Pass Rate** | 66% |
 
 ## Recent Runs
 
 | Date (UTC) | Workflow | Status | Commit | URL |
 |------------|----------|--------|--------|-----|
+| 2026-06-18 20:10 | uv in /adapters/ag2 for pytest - Update #1421784177 | ❌ FAIL | chore: update workflow dashboard | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27786346865) |
 | 2026-06-18 20:09 | Graph Update: pip in /core/gateway #1421783576 | ✅ PASS | Chore: Adding leftover files | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27786291176) |
 | 2026-06-18 20:09 | Adapters CI | ❌ FAIL | Chore: Adding leftover files | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27786288704) |
 | 2026-06-18 20:09 | iOS CI | ✅ PASS | Chore: Adding leftover files | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27786288660) |
@@ -63,4 +64,3 @@
 | 2026-06-13 12:39 | CodeQL Advanced | ✅ PASS | security: fix CodeQL taint tracking for client secret logging | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27466801004) |
 | 2026-06-13 12:31 | Android CI | ✅ PASS | security: fix CodeQL taint tracking for client secret logging | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27466801000) |
 | 2026-06-13 12:30 | Extension CI | ✅ PASS | security: fix CodeQL taint tracking for client secret logging | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27466800993) |
-| 2026-06-13 12:29 | Python CI | ✅ PASS | security: fix CodeQL taint tracking for client secret logging | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27466800994) |

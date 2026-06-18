@@ -1,12 +1,12 @@
 # 🔄 CI/CD WORKFLOW DASHBOARD
 
 ![Pass Rate](https://img.shields.io/badge/Pass%20Rate-67%25-brightgreen)
-![Total Runs](https://img.shields.io/badge/Total%20Runs-67-blue)
+![Total Runs](https://img.shields.io/badge/Total%20Runs-68-blue)
 
 | Metric | Count |
 |--------|-------|
-| **Total Runs** | 67 |
-| **Passed** | 45 |
+| **Total Runs** | 68 |
+| **Passed** | 46 |
 | **Failed** | 19 |
 | **Pass Rate** | 67% |
 
@@ -14,6 +14,7 @@
 
 | Date (UTC) | Workflow | Status | Commit | URL |
 |------------|----------|--------|--------|-----|
+| 2026-06-18 20:09 | Graph Update: pip in /core/gateway #1421783576 | ✅ PASS | Chore: Adding leftover files | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27786291176) |
 | 2026-06-18 20:09 | Adapters CI | ❌ FAIL | Chore: Adding leftover files | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27786288704) |
 | 2026-06-18 20:09 | iOS CI | ✅ PASS | Chore: Adding leftover files | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27786288660) |
 | 2026-06-17 08:48 | Deploy Docs to Cloudflare Pages | ✅ PASS | chore: update workflow dashboard | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27677072696) |
@@ -63,4 +64,3 @@
 | 2026-06-13 12:31 | Android CI | ✅ PASS | security: fix CodeQL taint tracking for client secret logging | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27466801000) |
 | 2026-06-13 12:30 | Extension CI | ✅ PASS | security: fix CodeQL taint tracking for client secret logging | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27466800993) |
 | 2026-06-13 12:29 | Python CI | ✅ PASS | security: fix CodeQL taint tracking for client secret logging | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27466800994) |
-| 2026-06-13 12:21 | CodeQL Advanced | ✅ PASS | security: fix CodeQL vulnerabilities (injection auth permissions logs) | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27466414684) |

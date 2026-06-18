@@ -1,20 +1,31 @@
-# Antimatter: Antigravity IDE Adapter (AG)
+# Antimatter
 
-This directory contains the Antimatter IPC adapter for the Antigravity IDE (VS Code).
+Unleash the power of AI coding on the go. Antimatter seamlessly syncs your live VS Code workspace with your Android device in real-time.
 
-## Architecture
+## Features
 
-This adapter follows the **Independent Adapter Model**. It does NOT contain any complex networking, Cloudflare tunnels, or cryptographic pairing logic. Instead, it acts purely as a "dumb" IPC client that connects to the central Antimatter Gateway.
+- **Live Chat Sync:** Pick up right where you left off. Continue your AI agent conversation seamlessly on your phone.
+- **Artifact Viewing:** Review complex markdown artifacts, code diffs, and generated files natively on your device.
+- **End-to-End Encryption:** Your workspace code and agent history are synced over a secure, E2EE WebSocket connection directly to your phone. No middlemen.
+- **Image Uploads:** Upload images from your phone directly into the agent's context in VS Code.
 
-1. **Connection**: The extension connects locally to the Gateway via WebSocket at `ws://127.0.0.1:8765`.
-2. **Registration**: Upon connection, it sends `{"type": "REGISTER_ADAPTER", "name": "ag"}`.
-3. **Execution**: When you send a message from the Antimatter Android app targeting the IDE, the Gateway securely routes that payload to this extension. The extension executes the command inside the IDE workspace and returns the result to the Gateway.
+## Getting Started
 
-## Building
+1. Open VS Code and ensure the Antimatter extension is enabled.
+2. The Antimatter Bridge will automatically start. You'll see an `[Antimatter]` badge in the status bar indicating the bridge is ready.
+3. Click the `[Antimatter]` badge or run the `Antimatter: Show Pairing QR` command from the Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`).
+4. Open the Antimatter app on your Android device and tap **Pair with IDE**.
+5. Scan the QR code displayed in VS Code.
+6. You're connected! 
 
-```bash
-npm install
-npm run build
-```
+## Troubleshooting
 
-For full system documentation, please see the `docs/` folder in the repository root.
+- **"Connection Refused" / "Gateway Offline":** Ensure that you are connected to the internet and the central gateway is running.
+- **"Agent Offline":** The VS Code extension may have been paused or crashed. Reload your VS Code window to restart the bridge.
+- **Offline Mode:** The Android app caches conversations. You can view past messages and artifacts even when disconnected from VS Code!
+
+## Requirements
+
+- VS Code 1.80.0 or higher.
+- An active internet connection for the initial pairing.
+- The Antimatter Android App installed on your device.

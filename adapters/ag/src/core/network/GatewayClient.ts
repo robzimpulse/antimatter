@@ -1,11 +1,12 @@
 import WebSocket from 'ws';
 import { randomUUID } from 'crypto';
+import * as vscode from 'vscode';
 import { ConnectionManager } from '../../feature/connect/ConnectionManager';
 import { MessageRouter } from './MessageRouter';
 
 export class GatewayClient {
     private client: WebSocket | null = null;
-    private readonly gatewayUrl = 'ws://127.0.0.1:8765';
+    private gatewayUrl: string;
     // Stable ID for this adapter instance — generated once per VS Code session
     private readonly adapterId: string = randomUUID();
 
@@ -14,7 +15,10 @@ export class GatewayClient {
         private router: MessageRouter,
         private workspaceRoot: string,
         private log: (msg: string) => void
-    ) {}
+    ) {
+        const port = vscode.workspace.getConfiguration('antimatter').get<number>('port') || 8765;
+        this.gatewayUrl = `ws://127.0.0.1:${port}`;
+    }
 
     public start() {
         this.connect();

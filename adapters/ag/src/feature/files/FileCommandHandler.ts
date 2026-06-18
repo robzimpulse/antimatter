@@ -29,11 +29,11 @@ export class FileCommandHandler {
         return;
       }
 
-      this.log(`GET_FILES requested for path: ${rootPath.fsPath}`);
+
       try {
         const tree = await this.fsHelper.buildFileTree(rootPath.fsPath, 2);
         const payload = JSON.stringify({ type: 'FILE_TREE', tree });
-        this.log(`Sending FILE_TREE with ${tree.length} top-level nodes, payload size: ${(payload.length / 1024).toFixed(2)} KB`);
+
         ws.send(payload);
       } catch (err) {
         this.log(`GET_FILES Error: ${err}`);

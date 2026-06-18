@@ -82,7 +82,7 @@ export class BrainWatcher {
   }
 
   public setConversation(conversationId: string, clientLastKnownStepCount: number = 0) {
-    this.log(`Switching BrainWatcher to conversation: ${conversationId} (Last Known: ${clientLastKnownStepCount})`);
+
     
     // Close existing watcher
     if (this.activeWatcher) {
@@ -101,7 +101,7 @@ export class BrainWatcher {
     // if the transcript file never appears (e.g. AntiGravity crashed).
     let waitAttempts = 0;
     const MAX_WAIT_ATTEMPTS = 120;
-    const waitForFile = setInterval(() => {
+    const waitForFile = setInterval(async () => {
       waitAttempts++;
       if (waitAttempts > MAX_WAIT_ATTEMPTS) {
         clearInterval(waitForFile);
@@ -112,7 +112,7 @@ export class BrainWatcher {
         clearInterval(waitForFile);
         
         // Initial read
-        this.processFile(transcriptPath, clientLastKnownStepCount);
+        await this.processFile(transcriptPath, clientLastKnownStepCount);
 
         // Always broadcast SESSION_STATE after the initial read so stepCount is accurate
         this.connectionManager.broadcast({
@@ -147,7 +147,8 @@ export class BrainWatcher {
       return;
     }
 
-    const stat = await fs.promises.stat(transcriptPath);
+    try {
+      const stat = await fs.promises.stat(transcriptPath);
 
     // File shrunk or was reset
     if (stat.size < this.lastReadBytes) {
@@ -220,10 +221,16 @@ export class BrainWatcher {
                 return !isBoilerplate;
               }).join('\n\n');
               
-              cleanThinking = cleanThinking.split('\n').filter((line: string) => {
+              // BUG-002: Rewrite filtering to avoid ESBuild minification array bugs
+              const thinkingLines = cleanThinking.split('\n');
+              let filteredThinking = '';
+              for (const line of thinkingLines) {
                   const l = line.toLowerCase();
-                  return !l.includes('critical instruction') && !l.includes('tool specificity');
-              }).join('\n').trim();
+                  if (!l.includes('critical instruction') && !l.includes('tool specificity')) {
+                      filteredThinking += line + '\n';
+                  }
+              }
+              cleanThinking = filteredThinking.trim();
 
               const strippedOfPunctuation = cleanThinking.replace(/[#\s*\-=_]+/g, '').trim();
               if (strippedOfPunctuation.length > 0) {
@@ -288,6 +295,10 @@ export class BrainWatcher {
           });
         }
       }
+    }
+    } catch (e) {
+      this.log(`[BrainWatcher] processFile critical error: ${e}`);
+      this.connectionManager.broadcast({ type: 'DEBUG_ERROR', message: `processFile failed: ${e}` });
     }
   }
 }

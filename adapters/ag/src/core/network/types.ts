@@ -1,5 +1,5 @@
 export type BaseInboundMessage =
-  | { type: 'SEND_MESSAGE'; text: string }
+  | { type: 'SEND_MESSAGE'; text: string; images?: string[] }
   | { type: 'NEW_CONVERSATION' }
   | { type: 'CANCEL_RESPONSE' }
   | { type: 'CHANGE_MODEL' }
@@ -13,8 +13,10 @@ export type BaseInboundMessage =
   | { type: 'READ_FILE'; path: string }
   | { type: 'WRITE_FILE'; path: string; content: string }
   | { type: 'SUBSCRIBE_CONVERSATION'; conversationId: string; lastKnownStepCount?: number }
+  | { type: 'FETCH_HISTORY_PAGE'; conversationId: string; offset: number; limit: number }
   | { type: 'GET_HISTORY' }
   | { type: 'GET_ARTIFACTS'; conversationId: string }
+  | { type: 'READ_ARTIFACT'; conversationId: string; path: string }
   | { type: 'AUTH_CHALLENGE'; challenge: string }
   | { type: 'PING' };
 

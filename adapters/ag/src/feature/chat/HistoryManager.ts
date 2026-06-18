@@ -17,7 +17,7 @@ export class HistoryManager {
     this.router.register('GET_HISTORY', async (_msg, ws) => {
       try {
         const history = await this.getConversationHistory();
-        this.log(`→ HISTORY_LIST with ${history.length} items`);
+
         ws.send(JSON.stringify({ type: 'HISTORY_LIST', conversations: history }));
       } catch (err) {
         this.log(`GET_HISTORY Error: ${err}`);
@@ -33,7 +33,7 @@ export class HistoryManager {
       }
       
       const artifactsPath = path.join(this.brainDir, conversationId);
-      this.log(`GET_ARTIFACTS requested for conversation: ${conversationId}`);
+
       
       try {
         try {
@@ -45,8 +45,9 @@ export class HistoryManager {
 
         const entries = await fs.promises.readdir(artifactsPath, { withFileTypes: true });
         const artifacts: any[] = [];
+        const allowedExtensions = ['.md', '.csv', '.txt', '.json'];
         for (const entry of entries) {
-          if (entry.isFile() && entry.name.endsWith('.md')) {
+          if (entry.isFile() && allowedExtensions.some(ext => entry.name.toLowerCase().endsWith(ext))) {
             artifacts.push({
               name: entry.name,
               path: path.join(artifactsPath, entry.name),
@@ -60,6 +61,39 @@ export class HistoryManager {
         ws.send(JSON.stringify({ type: 'ERROR', message: `Cannot read artifacts for ${conversationId}` }));
       }
     });
+
+    this.router.register('READ_ARTIFACT', async (msg, ws) => {
+      const { conversationId, path: artifactPath } = msg;
+      if (!conversationId || !/^[a-zA-Z0-9-]+$/.test(conversationId)) {
+        ws.send(JSON.stringify({ type: 'ERROR', message: 'Invalid or missing conversation ID' }));
+        return;
+      }
+      if (!artifactPath) {
+        ws.send(JSON.stringify({ type: 'ERROR', message: 'Missing artifact path' }));
+        return;
+      }
+
+      // Security: ensure the requested path is actually inside the conversation's brain directory
+      const baseDir = path.resolve(path.join(this.brainDir, conversationId));
+      const targetPath = path.resolve(artifactPath);
+      if (!targetPath.startsWith(baseDir)) {
+        ws.send(JSON.stringify({ type: 'ERROR', message: 'Path traversal rejected: Artifact is outside conversation directory' }));
+        return;
+      }
+
+      try {
+        const content = await fs.promises.readFile(targetPath, 'utf8');
+        ws.send(JSON.stringify({
+          type: 'ARTIFACT_CONTENT',
+          path: targetPath,
+          content: content,
+          language: path.extname(targetPath).substring(1) || 'text'
+        }));
+      } catch (err) {
+        this.log(`READ_ARTIFACT Error: ${err}`);
+        ws.send(JSON.stringify({ type: 'ERROR', message: `Could not read artifact: ${err}` }));
+      }
+    });
   }
 
   private async getConversationHistory(): Promise<{ id: string; timestamp: number; title: string }[]> {
@@ -67,6 +101,9 @@ export class HistoryManager {
 
     const history: { id: string; timestamp: number; title: string }[] = [];
     const dirs = fs.readdirSync(this.brainDir, { withFileTypes: true });
+    
+    // Lazy load readline to avoid global imports if not needed
+    const readline = require('readline');
 
     for (const dir of dirs) {
       if (!dir.isDirectory() || dir.name.startsWith('.') || dir.name === 'tempmediaStorage') continue;
@@ -78,14 +115,13 @@ export class HistoryManager {
       let title = 'New Conversation';
 
       try {
-        const fd = fs.openSync(transcriptPath, 'r');
-        const buffer = Buffer.alloc(4096);
-        const bytesRead = fs.readSync(fd, buffer, 0, 4096, 0);
-        fs.closeSync(fd);
+        const fileStream = fs.createReadStream(transcriptPath);
+        const rl = readline.createInterface({
+          input: fileStream,
+          crlfDelay: Infinity
+        });
 
-        const content = buffer.toString('utf-8', 0, bytesRead);
-        const lines = content.split('\n');
-        for (const line of lines) {
+        for await (const line of rl) {
           if (!line.trim()) continue;
           try {
             const entry = JSON.parse(line);
@@ -94,12 +130,17 @@ export class HistoryManager {
               if (text.includes('<USER_REQUEST>')) {
                 const match = text.match(/<USER_REQUEST>([\s\S]*?)<\/USER_REQUEST>/);
                 if (match && match[1]) text = match[1].trim();
+              } else {
+                text = text.replace(/<[^>]+>/g, '').trim();
               }
               title = text.length > 50 ? text.substring(0, 50) + '...' : text;
               break;
             }
           } catch { }
         }
+        
+        rl.close();
+        fileStream.destroy();
       } catch { }
 
       history.push({

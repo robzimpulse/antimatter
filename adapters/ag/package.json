@@ -1,18 +1,25 @@
 {
-  "name": "antimatter-ag",
+  "name": "antimatter",
   "displayName": "Antimatter",
-  "description": "Synchronizes your live Antigravity IDE session to your Android Antimatter app.",
+  "description": "Unleash the power of AI coding on the go. Antimatter seamlessly syncs your VS Code workspace with your Android device in real-time.",
   "version": "1.0.0",
   "license": "MIT",
   "author": "Saif Mukhtar",
   "homepage": "https://saifmukhtar.dev",
-  "publisher": "dev-saifmukhtar-antimatter",
+  "publisher": "antimatter-saifmukhtar-dev",
   "engines": {
     "vscode": "^1.80.0"
   },
   "categories": [
     "Machine Learning",
     "Other"
+  ],
+  "keywords": [
+    "ai",
+    "android",
+    "sync",
+    "antigravity",
+    "mobile"
   ],
   "galleryBanner": {
     "color": "#0d0d0d",
@@ -30,20 +37,16 @@
   "contributes": {
     "commands": [
       {
-        "command": "antimatter.startBridge",
-        "title": "Antimatter: Start Bridge Server"
+        "command": "antimatter.startAdapter",
+        "title": "Antimatter: Start Adapter"
       },
       {
-        "command": "antimatter.stopBridge",
-        "title": "Antimatter: Stop Bridge Server"
+        "command": "antimatter.stopAdapter",
+        "title": "Antimatter: Stop Adapter"
       },
       {
-        "command": "antimatter.showStatus",
-        "title": "Antimatter: Show Connection Status"
-      },
-      {
-        "command": "antimatter.showPairingQR",
-        "title": "Antimatter: Show Pairing QR"
+        "command": "antimatter.showConnectionInfo",
+        "title": "Antimatter: Show Connection Info"
       }
     ],
     "configuration": {
@@ -52,12 +55,12 @@
         "antimatter.port": {
           "type": "number",
           "default": 8765,
-          "description": "WebSocket port for the Antimatter bridge server"
+          "description": "WebSocket port for the Antimatter Gateway"
         },
         "antimatter.autoStart": {
           "type": "boolean",
           "default": true,
-          "description": "Automatically start the bridge server when Antigravity opens"
+          "description": "Automatically start the adapter when your workspace opens"
         }
       }
     }
@@ -72,7 +75,6 @@
   "devDependencies": {
     "@types/jest": "^30.0.0",
     "@types/node": "^22.0.0",
-    "@types/qrcode": "^1.5.6",
     "@types/vscode": "^1.80.0",
     "@types/ws": "^8.5.10",
     "@vscode/vsce": "^3.9.2",
@@ -82,7 +84,6 @@
     "typescript": "^5.6.2"
   },
   "dependencies": {
-    "qrcode": "^1.5.4",
     "ws": "^8.21.0"
   },
   "overrides": {

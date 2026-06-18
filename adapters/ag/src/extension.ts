@@ -19,8 +19,8 @@ function log(msg: string) {
 }
 
 export async function activate(context: vscode.ExtensionContext) {
-  outputChannel = vscode.window.createOutputChannel('Antimatter Bridge');
-  log('Antimatter Bridge activating...');
+  outputChannel = vscode.window.createOutputChannel('Antimatter Adapter');
+  log('Antimatter Adapter activating...');
 
   // 1. Data & State Managers
   const connectionManager = new ConnectionManager();
@@ -38,10 +38,13 @@ export async function activate(context: vscode.ExtensionContext) {
   new FileCommandHandler(router, fsHelper, log);
   new HistoryManager(router, log);
 
-  // 4. Register Routes
   router.register('SUBSCRIBE_CONVERSATION', async (msg, _ws) => {
     chatManager.setActiveConversation(msg.conversationId);
     brainWatcher.setConversation(msg.conversationId, msg.lastKnownStepCount || 0);
+  });
+
+  router.register('FETCH_HISTORY_PAGE', async (msg, _ws) => {
+    await brainWatcher.fetchHistoryPage(msg.conversationId, msg.offset, msg.limit);
   });
 
   router.register('PING', async (_msg, _ws) => {
@@ -49,29 +52,29 @@ export async function activate(context: vscode.ExtensionContext) {
     connectionManager.broadcast({ type: 'PONG' });
   });
 
-  const startBridge = async () => {
+  const startAdapter = async () => {
     try {
       gatewayClient.start();
       brainWatcher.start();
-      log('Bridge connected to Gateway IPC.');
-      vscode.window.showInformationMessage(`Antimatter Bridge started.`);
+      log('Adapter connected to Gateway IPC.');
+      vscode.window.showInformationMessage(`Antimatter Adapter started.`);
     } catch (e) {
-      log(`Failed to start bridge: ${e}`);
+      log(`Failed to start adapter: ${e}`);
     }
   };
 
-  const stopBridge = () => {
+  const stopAdapter = () => {
     gatewayClient.stop();
     brainWatcher.stop();
-    log('Bridge stopped.');
+    log('Adapter stopped.');
   };
 
   // 6. Register VS Code Commands
   context.subscriptions.push(
-    vscode.commands.registerCommand('antimatter.startBridge', startBridge),
-    vscode.commands.registerCommand('antimatter.stopBridge', stopBridge),
-    vscode.commands.registerCommand('antimatter.showPairingQR', () => {
-      vscode.window.showInformationMessage('Pairing is now managed by the Gateway terminal. Check your CLI!');
+    vscode.commands.registerCommand('antimatter.startAdapter', startAdapter),
+    vscode.commands.registerCommand('antimatter.stopAdapter', stopAdapter),
+    vscode.commands.registerCommand('antimatter.showConnectionInfo', () => {
+      vscode.window.showInformationMessage('Pairing and connection info is managed by the Antimatter Gateway terminal. Run "antimatter qr" or "antimatter status" in your terminal.');
     })
   );
 
@@ -91,10 +94,10 @@ export async function activate(context: vscode.ExtensionContext) {
   // Auto-start
   const config = vscode.workspace.getConfiguration('antimatter');
   if (config.get<boolean>('autoStart', true)) {
-    startBridge();
+    startAdapter();
   }
 
-  log('Antimatter Bridge activated.');
+  log('Antimatter Adapter activated.');
 }
 
 export function deactivate() {

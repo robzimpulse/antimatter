@@ -16,15 +16,15 @@ This document tracks the current testing status of the Antimatter ecosystem, out
 - **Status**: Tested
 - **Functionality**: The persistent WebSocket connection between the local gateway and the Android app establishes successfully.
 - **🚨 Known Issues**:
-  - The connection drops abruptly when the Android app is sent to the background. Background service persistence needs to be implemented.
+  - The connection drops abruptly when the Android app is sent to the background. Background service persistence needs to be implemented. (🟢 Fixed)
 
 ### 2. Workspace Browser
 
 - **Status**: Tested
 - **Functionality**: Basic directory parsing and file viewing work as expected.
 - **⚠️ Needed Improvements**:
-  - **Multi-Workspace Selection**: Currently lacking support for seamlessly switching between multiple active workspaces.
-  - **Comprehensive File Support**: Needs proper UI support for viewing all file types robustly within the Android app.
+  - **Multi-Workspace Selection**: Currently lacking support for seamlessly switching between multiple active workspaces. (🟢 Fixed)
+  - **Comprehensive File Support**: Needs proper UI support for viewing all file types robustly within the Android app. (🟢 Fixed)
 
 ### 3. Native PTY Terminal
 
@@ -37,14 +37,14 @@ This document tracks the current testing status of the Antimatter ecosystem, out
 ### 4. Chats Ai Agents (ag)
 
 - **Status**: Stable & Ready for Release
-- **Functionality**: The `ag` adapter is fully compatible and stable with Antimatter. The VS Code extension (Antimatter Adapter) has been polished, stripped of unnecessary dependencies, and packaged as a clean VSIX ready for publication on the Open VSX Registry.
+- **Functionality**: The `ag` and `ag2` adapter is fully compatible and stable with Antimatter. The VS Code extension (Antimatter Adapter) has been polished, stripped of unnecessary dependencies, and packaged as a clean VSIX ready for publication on the Open VSX Registry.
 - **Need Improvement**: Stabilizing the Tool calls, adding Accept, edit and reject Features.
 
 ---
 
 ## Active Bug Tracking
 
-### BUG-009 — Offline cache gets wiped on reconnect due to async race condition
+### BUG-001 — Offline cache gets wiped on reconnect due to async race condition
 
 - **Severity**: P1 High  
 - **Status**: 🟢 FIXED  
@@ -55,7 +55,7 @@ This document tracks the current testing status of the Antimatter ecosystem, out
 
 ---
 
-### BUG-010 — Multimodal image prompts dropping silently
+### BUG-002 — Multimodal image prompts dropping silently
 
 - **Severity**: P2 Medium  
 - **Status**: 🟢 FIXED  
@@ -66,7 +66,7 @@ This document tracks the current testing status of the Antimatter ecosystem, out
 
 ---
 
-### BUG-001 — File open spins forever (no file content received)
+### BUG-003 — File open spins forever (no file content received)
 
 - **Severity**: P1 High  
 - **Status**: 🟢 FIXED  
@@ -81,7 +81,7 @@ This document tracks the current testing status of the Antimatter ecosystem, out
 
 ---
 
-### BUG-002 — Workspace tied to AI agent (files unavailable without agent)
+### BUG-004 — Workspace tied to AI agent (files unavailable without agent)
 
 - **Severity**: P1 High  
 - **Status**: 🟢 FIXED  
@@ -108,7 +108,7 @@ This document tracks the current testing status of the Antimatter ecosystem, out
 
 ---
 
-### BUG-008 — Antigravity IDE adapter (ag) hardcodes WebSocket port
+### BUG-005 — Antigravity IDE adapter (ag) hardcodes WebSocket port
 
 - **Severity**: P3 Low
 - **Status**: 🟢 FIXED
@@ -119,7 +119,7 @@ This document tracks the current testing status of the Antimatter ecosystem, out
 
 ---
 
-### BUG-007 — Android app shows "No history" for Antigravity IDE adapter (ag)
+### BUG-006 — Android app shows "No history" for Antigravity IDE adapter (ag)
 
 - **Severity**: P2 Medium
 - **Status**: 🟢 FIXED
@@ -130,7 +130,7 @@ This document tracks the current testing status of the Antimatter ecosystem, out
 
 ---
 
-### BUG-006 — Opening regular markdown files triggers the Artifact UI in Chat
+### BUG-007 — Opening regular markdown files triggers the Artifact UI in Chat
 
 - **Severity**: P2 Medium
 - **Status**: 🟢 FIXED
@@ -143,7 +143,7 @@ This document tracks the current testing status of the Antimatter ecosystem, out
 
 ---
 
-### BUG-005 — Android app does not auto-reconnect if the Gateway restarts
+### BUG-008 — Android app does not auto-reconnect if the Gateway restarts
 
 - **Severity**: P2 Medium
 - **Status**: 🟢 FIXED
@@ -159,7 +159,7 @@ This document tracks the current testing status of the Antimatter ecosystem, out
 
 ---
 
-### BUG-004 — Folders in nested directories are not clickable / show "failed to load"
+### BUG-009 — Folders in nested directories are not clickable / show "failed to load"
 
 - **Severity**: P1 High  
 - **Status**: 🟢 FIXED  
@@ -189,7 +189,7 @@ This document tracks the current testing status of the Antimatter ecosystem, out
 
 ---
 
-### BUG-003 — No way to switch workspace from UI (allowlist not exposed)
+### BUG-010 — No way to switch workspace from UI (allowlist not exposed)
 
 - **Severity**: P2 Medium  
 - **Status**: 🟢 FIXED  
@@ -206,7 +206,7 @@ This document tracks the current testing status of the Antimatter ecosystem, out
 
 ---
 
-### BUG-004 — Missing `agentId` in `GET_HISTORY`
+### BUG-011 — Missing `agentId` in `GET_HISTORY`
 
 - **Severity**: P1 High  
 - **Status**: 🟢 FIXED  
@@ -217,7 +217,7 @@ This document tracks the current testing status of the Antimatter ecosystem, out
 
 ---
 
-### BUG-005 — WebSocket Buffer Overflow (Dropped Chat History Chunks)
+### BUG-012 — WebSocket Buffer Overflow (Dropped Chat History Chunks)
 
 - **Severity**: P1 High  
 - **Status**: 🟢 FIXED  
@@ -229,46 +229,60 @@ This document tracks the current testing status of the Antimatter ecosystem, out
   2. Added an explicit `await new Promise(r => setTimeout(r, 10))` pacing delay inside `BrainWatcher.ts` after every two chunk broadcasts to allow the network to drain.
   3. Rewrote the debounce coroutine inside Android's `ChatViewModel.kt` (`is InboundMessage.StepBatch`) to use a `while(true)` loop that safely grabs and clears pending buffer items without race conditions.
 
-### BUG-006 — Artifact Workspace Path Traversal Rejection
+### BUG-013 — Artifact Workspace Path Traversal Rejection
 
 - **Severity**: P2 Medium  
 - **Status**: 🟢 FIXED  
 - **Reported**: 2026-06-18  
 - **Symptom**: Tapping on an artifact in the Android app results in an error message stating "Path traversal rejected" (interpreted by users as "conversation id is not in allowed workspace"). The artifact viewer opens but fails to load the content.
 - **Root Cause**: The Android app requested artifact contents using the Gateway-native `READ_FILE` command. Since the gateway correctly isolates file access to the user-selected workspace, reading from the `~/.gemini/antigravity-ide/brain/` agent directory triggered a path traversal security rejection. Additionally, the backend filtered artifacts exclusively to `.md` files, ignoring other text formats like `.csv`.
-- **Fix**: 
+- **Fix**:
   1. Created a specialized `READ_ARTIFACT` routing command between the Android app and the `ag` adapter, bypassing the Gateway's workspace restriction entirely and isolating the read strictly to the active conversation's directory.
   2. Relaxed the artifact file filter in `HistoryManager.ts` to expose `.csv`, `.txt`, and `.json` in addition to `.md`. Note: Native image/PDF viewing within the `MarkdownText` renderer is intentionally omitted at this stage to prevent complex crashes.
 
 ---
 
-### BUG-011 — Legacy Conversations Visibility
-
-- **Severity**: P2 Medium
-- **Status**: 🔴 UNRESOLVED
-- **Reported**: 2026-06-18
-- **Symptom**: The AG2 adapter only reads conversations that use the new `transcript.jsonl` format. There are ~14 older conversations in the `.system_generated/messages/` legacy format that do not appear in the sidebar and cannot be accessed.
-- **Fix Needed**: Add a fallback or migration logic in `AgentBridge` to parse and serve the older legacy messages if `transcript.jsonl` does not exist.
-
----
-
-### BUG-012 — Publishing to Open VSX
+### BUG-014 — Legacy Conversations Visibility
 
 - **Severity**: P3 Low
-- **Status**: 🔴 PENDING
+- **Status**: ⚪ FUTURE ROADMAP
 - **Reported**: 2026-06-18
-- **Symptom**: Need to finalize stability and readiness for publishing the VSCode extension. The extension is not yet published under `antimatter-saifmukhtar-dev`.
-- **Fix Needed**: Run final integration tests, package the VSIX, and push to the Open VSX registry.
+- **Symptom**: The AG2 adapter only reads conversations that use the new `transcript.jsonl` format. There are ~14 older conversations in the `.system_generated/messages/` legacy format that do not appear in the sidebar and cannot be accessed.
+- **Fix Needed**: Will be implemented only if users request access to older `.system_generated/messages/` sessions.
 
 ---
 
-### BUG-013 — Unspecified User-Reported Bugs
+### BUG-015 — Publishing to Open VSX
+
+- **Severity**: P3 Low
+- **Status**: 🟢 LIVE
+- **Reported**: 2026-06-18
+- **Symptom**: Need to finalize stability and readiness for publishing the VSCode extension. The extension is not yet published under `antimatter-saifmukhtar-dev`.
+- **Fix**: The VS Code extension has been successfully published to the Open VSX registry and is now live.
+
+---
+
+### BUG-016 — Unspecified User-Reported Bugs
 
 - **Severity**: Unknown
 - **Status**: 🔴 PENDING DETAILS
 - **Reported**: 2026-06-18
 - **Symptom**: User mentioned finding additional bugs during the last testing session but has not detailed them yet.
 - **Fix Needed**: Update this block with specifics once the user provides details.
+
+---
+
+### BUG-017 — Adapter Focus Stealing / Fallback on Multi-Adapter Setup
+
+- **Severity**: P1 High
+- **Status**: 🔴 UNRESOLVED
+- **Reported**: 2026-06-19
+- **Symptom**: When both `ag` and `ag2` adapters are running, whichever adapter receives an update or connects last "steals" focus or causes the Android app to forcefully fall back to it. For example, if the user manually selects `ag`, but `ag2` receives an update in the background, the app's UI forcefully switches to `ag2`'s state but breaks the conversation chat view.
+- **Root Cause**: The Gateway directly forwards all incoming messages (like `SESSION_STATE`, `STEP_BATCH`, `HISTORY_LIST`) from the adapters to the Android clients without attaching an `agentId`. The Android app processes these broadcasts blindly, so a background adapter can overwrite the UI state of the foreground adapter.
+- **Fix Needed**:
+  1. Have the Gateway inject `data["agentId"] = agent_id` before broadcasting adapter messages.
+  2. Update the Android `InboundMessage` models to parse `agentId`.
+  3. Have `ChatViewModel` ignore inbound agent-specific messages if their `agentId` does not match the currently selected `activeAgentId`.
 
 ---
 
@@ -295,3 +309,11 @@ This document tracks the current testing status of the Antimatter ecosystem, out
 ## Reporting Issues
 
 Community testing is vital! If you test these features and find any unexpected behavior, or if you manage to test the untried features (especially on iOS), it is highly encouraged to report the issues. Your feedback helps stabilize Antimatter!
+
+### BUG-016 — AG2 Adapter Exposing AG History
+- **Severity**: P2 Medium
+- **Status**: 🟢 RESOLVED
+- **Reported**: 2026-06-18
+- **Symptom**: In the AG2 adapter, opening conversations from the sidebar showed static historical messages ("shows same messages") that never updated with the active IDE session ("not updated").
+- **Root Cause**: The AG2 adapter was returning all historical conversations created by the AG agent in its history list. Tapping these older conversations caused AG2 to parse the static transcript files. Since the active IDE session was still tied to a different conversation ID, the selected historical conversation never received new messages.
+- **Fix**: Modified `agent_bridge.py` in `ag2` so that its history list ONLY exposes the active IDE session (`self.active_session_id`). If the user wishes to browse older `ag` conversations, they should switch the agent back to `ag`.

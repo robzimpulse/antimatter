@@ -1,12 +1,12 @@
 # 🔄 CI/CD WORKFLOW DASHBOARD
 
 ![Pass Rate](https://img.shields.io/badge/Pass%20Rate-64%25-brightgreen)
-![Total Runs](https://img.shields.io/badge/Total%20Runs-87-blue)
+![Total Runs](https://img.shields.io/badge/Total%20Runs-88-blue)
 
 | Metric | Count |
 |--------|-------|
-| **Total Runs** | 87 |
-| **Passed** | 56 |
+| **Total Runs** | 88 |
+| **Passed** | 57 |
 | **Failed** | 28 |
 | **Pass Rate** | 64% |
 
@@ -14,6 +14,7 @@
 
 | Date (UTC) | Workflow | Status | Commit | URL |
 |------------|----------|--------|--------|-----|
+| 2026-06-19 20:21 | Android CI | ✅ PASS | test(connect): fix NullPointerException in ConnectionViewModelTest | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27846409856) |
 | 2026-06-19 20:16 | Android CI | ❌ FAIL | fix(ag): add missing fetchHistoryPage method to BrainWatcher | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27846333368) |
 | 2026-06-19 20:13 | Adapters CI | ✅ PASS | test(connect): fix NullPointerException in ConnectionViewModelTest | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27846410029) |
 | 2026-06-19 20:13 | iOS CI | ✅ PASS | test(connect): fix NullPointerException in ConnectionViewModelTest | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27846409892) |
@@ -63,4 +64,3 @@
 | 2026-06-15 22:23 | npm_and_yarn in /adapters/ag for js-yaml - Update #1414775372 | ❌ FAIL | chore: update workflow dashboard | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27580281687) |
 | 2026-06-15 22:22 | Graph Update: uv in /core |  /core/gateway |  /core/shared-fs #1414773591 | [View Log](✅ PASS,feat: implement native PTY terminal for iOS Android and Gateway,https://github.com/saifmukhtar/antimatter/actions/runs/27580235376) |
 | 2026-06-15 22:21 | Adapters CI | ❌ FAIL | feat: implement native PTY terminal for iOS Android and Gateway | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27580233236) |
-| 2026-06-15 22:21 | iOS CI | ✅ PASS | feat: implement native PTY terminal for iOS Android and Gateway | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27580233232) |

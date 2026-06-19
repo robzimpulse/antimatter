@@ -1,19 +1,20 @@
 # 🔄 CI/CD WORKFLOW DASHBOARD
 
-![Pass Rate](https://img.shields.io/badge/Pass%20Rate-63%25-brightgreen)
-![Total Runs](https://img.shields.io/badge/Total%20Runs-83-blue)
+![Pass Rate](https://img.shields.io/badge/Pass%20Rate-64%25-brightgreen)
+![Total Runs](https://img.shields.io/badge/Total%20Runs-84-blue)
 
 | Metric | Count |
 |--------|-------|
-| **Total Runs** | 83 |
-| **Passed** | 53 |
+| **Total Runs** | 84 |
+| **Passed** | 54 |
 | **Failed** | 27 |
-| **Pass Rate** | 63% |
+| **Pass Rate** | 64% |
 
 ## Recent Runs
 
 | Date (UTC) | Workflow | Status | Commit | URL |
 |------------|----------|--------|--------|-----|
+| 2026-06-19 20:11 | Adapters CI | ✅ PASS | fix(ag): add missing fetchHistoryPage method to BrainWatcher | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27846333358) |
 | 2026-06-19 20:11 | Core CI | ✅ PASS | fix(ag): add missing fetchHistoryPage method to BrainWatcher | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27846333340) |
 | 2026-06-19 20:09 | Android CI | ❌ FAIL | chore: update root config and documentation | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27846058508) |
 | 2026-06-19 20:07 | Adapters CI | ❌ FAIL | chore(deps): bump astro @astrojs/starlight and @astrojs/starlight-tailwind | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27846157721) |
@@ -63,4 +64,3 @@
 | 2026-06-15 20:50 | CodeQL Advanced | ❌ FAIL | chore(deps-dev): bump form-data from 4.0.5 to 4.0.6 in /adapters/ag | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27575026906) |
 | 2026-06-15 20:47 | CodeQL Advanced | ❌ FAIL | Fix: Remove outputs | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27574952288) |
 | 2026-06-15 20:45 | Android CI | ❌ FAIL | chore(deps-dev): bump form-data from 4.0.5 to 4.0.6 in /adapters/ag | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27575026885) |
-| 2026-06-15 20:44 | Android CI | ❌ FAIL | Fix: Remove outputs | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27574950598) |

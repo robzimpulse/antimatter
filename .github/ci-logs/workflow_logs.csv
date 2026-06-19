@@ -84,3 +84,4 @@ Date,Workflow,Status,Commit,URL
 2026-06-19 20:11,Core CI,✅ PASS,fix(ag): add missing fetchHistoryPage method to BrainWatcher,https://github.com/saifmukhtar/antimatter/actions/runs/27846333340
 2026-06-19 20:11,Adapters CI,✅ PASS,fix(ag): add missing fetchHistoryPage method to BrainWatcher,https://github.com/saifmukhtar/antimatter/actions/runs/27846333358
 2026-06-19 20:13,iOS CI,✅ PASS,test(connect): fix NullPointerException in ConnectionViewModelTest,https://github.com/saifmukhtar/antimatter/actions/runs/27846409892
+2026-06-19 20:13,Adapters CI,✅ PASS,test(connect): fix NullPointerException in ConnectionViewModelTest,https://github.com/saifmukhtar/antimatter/actions/runs/27846410029

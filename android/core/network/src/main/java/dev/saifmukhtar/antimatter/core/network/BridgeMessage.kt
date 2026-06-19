@@ -67,7 +67,8 @@ sealed class InboundMessage {
         val model: String = "",
         val stepCount: Int = 0,
         val cloudflareUrl: String? = null,
-        val environment: String? = null
+        val environment: String? = null,
+        val agentId: String? = null
     ) : InboundMessage()
 
     data class Step(
@@ -75,10 +76,10 @@ sealed class InboundMessage {
         val index: Int = 0
     ) : InboundMessage()
 
-    data class StepBatch(val steps: List<Step> = emptyList()) : InboundMessage()
+    data class StepBatch(val steps: List<Step> = emptyList(), val agentId: String? = null) : InboundMessage()
 
-    data class Generating(val conversationId: String = "") : InboundMessage()
-    data class ResponseComplete(val conversationId: String = "") : InboundMessage()
+    data class Generating(val conversationId: String = "", val agentId: String? = null) : InboundMessage()
+    data class ResponseComplete(val conversationId: String = "", val agentId: String? = null) : InboundMessage()
 
     data class ActiveFile(
         val path: String = "",
@@ -94,7 +95,8 @@ sealed class InboundMessage {
     data class ArtifactContent(
         val path: String = "",
         val content: String = "",
-        val language: String = ""
+        val language: String = "",
+        val agentId: String? = null
     ) : InboundMessage()
 
     data class FileTree(
@@ -105,9 +107,9 @@ sealed class InboundMessage {
     data class Error(val message: String = "") : InboundMessage()
     data class SystemAlert(val title: String = "", val body: String = "") : InboundMessage()
     data class SystemNotification(val title: String = "", val body: String = "") : InboundMessage()
-    data class HistoryList(val conversations: List<ConversationSummary> = emptyList()) : InboundMessage()
+    data class HistoryList(val conversations: List<ConversationSummary> = emptyList(), val agentId: String? = null) : InboundMessage()
     data class AuthResponse(val signature: String = "", val pubkey: String = "") : InboundMessage()
-    data class ArtifactsList(val artifacts: List<FileNode> = emptyList()) : InboundMessage()
+    data class ArtifactsList(val artifacts: List<FileNode> = emptyList(), val agentId: String? = null) : InboundMessage()
     data class AgentInfo(val id: String, val name: String, val status: String, val workspaceRoot: String? = null)
     data class AvailableAgents(
         val agents: List<AgentInfo> = emptyList(),

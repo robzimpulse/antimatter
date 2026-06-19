@@ -75,10 +75,11 @@ async def main():
                                 await bridge.send_workspace(get_default_workspace())
 
                             elif msg_type == "NEW_CONVERSATION":
-                                await websocket.send(json.dumps({
-                                    "type": "ERROR",
-                                    "message": "Antimatter Bridge daemon currently locks to a single active IDE session."
-                                }))
+                                # ag2 does not support new conversations, but we shouldn't throw an error
+                                # because the Android app calls this automatically when switching agents.
+                                # Instead, just send the current session state.
+                                if bridge.conversation_id:
+                                    await bridge.send_transcript(bridge.conversation_id)
 
                             elif msg_type == "GET_HISTORY":
                                 await bridge.send_history()

@@ -187,6 +187,8 @@ class GatewayServer:
                 # Currently we only have one e2ee session and one client.
                 # If we have multiple clients, we need to map adapter messages to clients.
                 # For now, we broadcast to all connected, authenticated clients.
+                if isinstance(data, dict):
+                    data["agentId"] = agent_id
                 await self.router.broadcast_to_clients(data, self.e2ee)
                 
         except ConnectionClosed:

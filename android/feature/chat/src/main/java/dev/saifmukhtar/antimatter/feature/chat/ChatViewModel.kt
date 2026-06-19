@@ -150,6 +150,24 @@ class ChatViewModel @Inject constructor(
     }
 
     private fun handleInboundMessage(message: InboundMessage) {
+        val activeAgentId = _uiState.value.activeAgentId
+        
+        // Guard: Ignore background adapter messages that don't match the active agent
+        val msgAgentId = when (message) {
+            is InboundMessage.SessionState -> message.agentId
+            is InboundMessage.StepBatch -> message.agentId
+            is InboundMessage.Generating -> message.agentId
+            is InboundMessage.ResponseComplete -> message.agentId
+            is InboundMessage.HistoryList -> message.agentId
+            is InboundMessage.ArtifactsList -> message.agentId
+            is InboundMessage.ArtifactContent -> message.agentId
+            else -> null
+        }
+        
+        if (msgAgentId != null && msgAgentId != activeAgentId) {
+            return
+        }
+
         when (message) {
             is InboundMessage.SessionState -> {
                 val previousConversationId = _uiState.value.conversationId

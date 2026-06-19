@@ -1,8 +1,9 @@
 {
   "name": "antimatter-gateway",
-  "version": "0.1.0",
+  "version": "2.0.0",
   "description": "Antimatter Gateway executable wrapper for Node.js developers",
   "bin": {
+    "antimatter-gateway": "./bin/antimatter.js",
     "antimatter": "./bin/antimatter.js",
     "antimatter-pair": "./bin/antimatter-pair.js"
   },

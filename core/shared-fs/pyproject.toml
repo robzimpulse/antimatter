@@ -1,7 +1,8 @@
 [project]
-version = "0.1.4"
+version = "2.0.1"
 readme = "README.md"
 name = "antimatter-shared-fs"
+description = "Filesystem shared protocol components for Antimatter"
 dependencies = [
     "antimatter-shared-protocol"
 ]

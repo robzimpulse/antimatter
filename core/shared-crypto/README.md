@@ -2,8 +2,8 @@
   <h1>⚛️ Antimatter Core</h1>
   <p><b>The Universal Multi-Agent Microservices Gateway</b></p>
   
-  [![PyPI Version](https://img.shields.io/pypi/v/antimatter-core.svg)](https://pypi.org/project/antimatter-core/)
-  [![Python](https://img.shields.io/pypi/pyversions/antimatter-core.svg)](https://pypi.org/project/antimatter-core/)
+  [![PyPI Version](https://img.shields.io/pypi/v/antimatter-gateway.svg)](https://pypi.org/project/antimatter-gateway/)
+  [![Python](https://img.shields.io/pypi/pyversions/antimatter-gateway.svg)](https://pypi.org/project/antimatter-gateway/)
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 </div>
 
@@ -25,7 +25,7 @@ By decoupling the architecture, Antimatter allows you to seamlessly switch betwe
 To install the entire Antimatter ecosystem (Gateway + All Adapters), simply run:
 
 ```bash
-pip install antimatter-core
+pip install antimatter-gateway
 ```
 
 *Note: This package provides the core infrastructure for the Antimatter ecosystem.*
@@ -36,8 +36,10 @@ Once installed, you have access to a suite of clean, simple terminal commands:
 
 | Command | Description |
 |---|---|
-| `antimatter` | Starts the primary Gateway server. |
-| `antimatter-pair` | Generates a secure QR code to pair your Android device. |
+| `antimatter-gateway start` | Starts the primary Gateway server silently as a background daemon. |
+| `antimatter-gateway stop` | Safely kills the background Gateway daemon. |
+| `antimatter-gateway status`| Checks if the Gateway daemon is running. |
+| `antimatter-gateway pair`  | Generates a secure QR code to pair your Android device. |
 | `antimatter-ag2` | Starts the Antigravity 2.0 Adapter. |
 | `antimatter-claude` | Starts the Claude Desktop Adapter. |
 
@@ -45,18 +47,25 @@ Once installed, you have access to a suite of clean, simple terminal commands:
 
 1. **Start the Gateway:**
    ```bash
-   antimatter
+   antimatter-gateway start
    ```
+   *The gateway now detaches and runs silently in the background. Logs are written to `~/.antimatter_daemon/gateway.log`.*
+
 2. **Pair your Device:**
-   Open a new terminal and run:
    ```bash
-   antimatter-pair
+   antimatter-gateway pair
    ```
    Scan the generated QR code using the Antimatter Android App.
+
 3. **Start an Agent:**
    Open a new terminal and start your preferred AI agent adapter:
    ```bash
    antimatter-ag2
+   ```
+
+4. **Stop the Gateway (when finished):**
+   ```bash
+   antimatter-gateway stop
    ```
 
 ## 🔒 Security Architecture

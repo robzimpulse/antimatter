@@ -57,20 +57,14 @@ def print_qr_to_terminal(payload: str) -> None:
         logger.warning("Failed to print ASCII QR. Terminal might not support it.")
 
 def main():
-    import socket
-    import sys
     
     # Server running check removed so users can generate QR codes anytime
 
     from antimatter_shared_config.config import load_config
     config = load_config()
-    if not config.gateway_priv_x25519 or not config.pairing_token:
-        print("Error: Gateway not initialized. Please run 'antimatter-gateway' first.")
+    if not config.private_key_pem or not config.pairing_token:
+        print("Error: Gateway not initialized. Please run 'antimatter-gateway start' first.")
         return
-
-    # Actually, E2EESession handles derivation.
-    from antimatter_crypto.e2ee import E2EESession
-    e2ee = E2EESession(role="gateway", private_key_b64=config.gateway_priv_x25519)
     
     tunnel_url = config.cloudflare_url
 

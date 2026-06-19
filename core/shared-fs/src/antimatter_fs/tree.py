@@ -9,7 +9,7 @@ IGNORE_LIST = {
     '.idea', '.DS_Store', '.kotlin'
 }
 
-def _build_tree_sync(root_path: str, max_depth: int = 5, current_depth: int = 0) -> list[FileNode]:
+def _build_tree_sync(root_path: str, max_depth: int = 12, current_depth: int = 0) -> list[FileNode]:
     """Synchronous recursive tree builder."""
     if current_depth > max_depth:
         return []
@@ -44,6 +44,6 @@ def _build_tree_sync(root_path: str, max_depth: int = 5, current_depth: int = 0)
     nodes.sort(key=lambda x: (not x.is_directory, x.name.lower()))
     return nodes
 
-async def build_file_tree(root_path: str, max_depth: int = 5) -> list[FileNode]:
+async def build_file_tree(root_path: str, max_depth: int = 12) -> list[FileNode]:
     """Async file tree builder that won't block the event loop."""
     return await asyncio.to_thread(_build_tree_sync, root_path, max_depth, 0)

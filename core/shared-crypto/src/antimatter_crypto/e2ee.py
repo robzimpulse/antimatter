@@ -30,6 +30,7 @@ class E2EESession:
         self._c2s_key: bytes | None = None  # client → server
         self._s2c_key: bytes | None = None  # server → client
         self._msg_counter = 0
+        self._last_seen_msg_id: int = 0  # For replay-attack prevention on decrypt
 
     def _derive_key(self, shared_secret: bytes, info: bytes) -> bytes:
         return HKDF(
@@ -77,11 +78,23 @@ class E2EESession:
     def decrypt(self, envelope: dict, expected_direction: str) -> str:
         """
         Verifies AAD prefix matches expected direction before decryption.
-        Raises ValueError if direction mismatch (replay/swap attack detected).
+        Enforces monotonically increasing msg_id to prevent replay attacks.
+        Raises ValueError if direction mismatch or replay detected.
         """
         aad = envelope["aad"].encode()
         if not aad.startswith(expected_direction.encode()):
             raise ValueError(f"AAD direction mismatch: expected prefix {expected_direction!r}, got {aad!r}")
+        
+        # Extract and validate msg_id from AAD (format: "direction:v1:msg_id:N")
+        try:
+            msg_id = int(aad.decode().split("msg_id:")[1])
+            if msg_id <= self._last_seen_msg_id:
+                raise ValueError(f"Replay attack detected: msg_id {msg_id} is not greater than last seen {self._last_seen_msg_id}")
+            self._last_seen_msg_id = msg_id
+        except (IndexError, ValueError) as e:
+            if "Replay attack" in str(e):
+                raise
+            raise ValueError(f"Invalid AAD format — cannot extract msg_id: {aad!r}")
         
         nonce = base64.b64decode(envelope["iv"])
         ct    = base64.b64decode(envelope["ct"])

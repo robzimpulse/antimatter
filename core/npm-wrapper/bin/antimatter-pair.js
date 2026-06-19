@@ -2,7 +2,8 @@
 const { spawnSync } = require('child_process');
 
 console.log('🚀 Booting Antimatter Pairing tool via uvx...');
-const result = spawnSync('uvx', ['antimatter-pair'], { stdio: 'inherit', shell: true });
+const args = process.argv.slice(2);
+const result = spawnSync('uvx', ['antimatter-gateway', 'pair', ...args], { stdio: 'inherit', shell: true });
 
 if (result.error || result.status !== 0) {
     console.error('\n❌ Failed to start the Antimatter Pair tool.');

@@ -1,16 +1,21 @@
 [project]
-version = "0.1.4"
+version = "2.0.4"
 readme = "README.md"
 name = "antimatter-gateway"
+description = "Local edge gateway for the Antimatter ecosystem"
 dependencies = [
-    "websockets>=12.0",
-    "qrcode>=7.4.2",
-    "aiofiles>=23.0.0",
+    "websockets==15.0.1",
+    "qrcode==8.2",
+    "aiofiles==25.1.0",
+    "ptyprocess==0.7.0",
+    "pydantic>=2.0.0",
+    "keyring>=24.0.0",
+    "cryptography>=41.0.0",
+    "base58>=2.1.1",
     "antimatter-shared-config",
     "antimatter-shared-crypto",
     "antimatter-shared-protocol",
-    "antimatter-shared-fs",
-    "ptyprocess>=0.7.0"
+    "antimatter-shared-fs"
 ]
 
 [tool.uv.sources]
@@ -20,8 +25,7 @@ antimatter-shared-protocol = { workspace = true }
 antimatter-shared-fs = { workspace = true }
 
 [project.scripts]
-antimatter = "antimatter_gateway.server:main"
-antimatter-pair = "antimatter_gateway.qr:main"
+antimatter-gateway = "antimatter_gateway.server:main"
 
 
 [build-system]

@@ -40,15 +40,19 @@ class PtyManager:
             
             async def _read_loop():
                 queue = asyncio.Queue(maxsize=1000)
-                
+                dropped_frames = 0  # track consecutive drops for PTY_OVERFLOW signal
+
                 def _reader():
+                    nonlocal dropped_frames
                     try:
                         data = os.read(pty.fd, 4096)
                         if data:
                             try:
                                 queue.put_nowait(data)
+                                dropped_frames = 0  # reset on successful enqueue
                             except asyncio.QueueFull:
-                                logger.warning(f"Backpressure! Dropping output frames for {session_id}")
+                                dropped_frames += 1
+                                logger.warning(f"PTY backpressure: dropped frame #{dropped_frames} for session {session_id}")
                     except BlockingIOError:
                         pass
                     except OSError as e:
@@ -60,14 +64,36 @@ class PtyManager:
 
                 try:
                     while session_id in self.sessions:
-                        data = await queue.get()
+                        try:
+                            data = await asyncio.wait_for(queue.get(), timeout=0.5)
+                        except asyncio.TimeoutError:
+                            # If frames were dropped since last flush, notify the client
+                            if dropped_frames > 0:
+                                if self.router.clients:
+                                    await self.router.broadcast_to_clients_encrypted({
+                                        "type": "PTY_OVERFLOW",
+                                        "dropped": dropped_frames,
+                                        "message": f"[{dropped_frames} frame(s) dropped — terminal output was too fast]"
+                                    })
+                                dropped_frames = 0
+                            continue
+
+                        # If there were pending drops, notify before the next real frame
+                        if dropped_frames > 0:
+                            if self.router.clients:
+                                await self.router.broadcast_to_clients_encrypted({
+                                    "type": "PTY_OVERFLOW",
+                                    "dropped": dropped_frames,
+                                    "message": f"[{dropped_frames} frame(s) dropped — terminal output was too fast]"
+                                })
+                            dropped_frames = 0
+
                         b64_data = base64.b64encode(data).decode('utf-8')
-                        payload = {
-                            "type": "PTY_OUTPUT",
-                            "data": b64_data
-                        }
-                        if self.router.gateway and self.router.gateway.e2ee:
-                            await self.router.broadcast_to_clients(payload, self.router.gateway.e2ee)
+                        if self.router.clients:
+                            await self.router.broadcast_to_clients_encrypted({
+                                "type": "PTY_OUTPUT",
+                                "data": b64_data
+                            })
                 except asyncio.CancelledError:
                     pass
                 finally:
@@ -110,7 +136,7 @@ class PtyManager:
         if session_id in self.sessions:
             try:
                 self.sessions[session_id].terminate(force=True)
-            except:
+            except Exception:
                 pass
             del self.sessions[session_id]
         if session_id in self.read_tasks:

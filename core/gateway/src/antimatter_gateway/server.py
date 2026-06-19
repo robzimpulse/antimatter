@@ -1,17 +1,25 @@
 import asyncio
 import json
 import logging
+import logging.handlers
+import os
+import sys
+import signal
+import secrets
 import time
 import websockets
+from pathlib import Path
 from websockets.exceptions import ConnectionClosed
 
-from antimatter_shared_config.config import load_config, save_config, AntimatterConfig
+from antimatter_shared_config.config import load_config, save_config
 from antimatter_crypto.auth import Ed25519Auth
 from antimatter_crypto.e2ee import E2EESession
-from .qr import generate_qr_payload, print_qr_to_terminal
 from .router import MessageRouter
 
 logger = logging.getLogger(__name__)
+
+# IPC token file — readable only by the owning user (0o600)
+IPC_TOKEN_PATH = Path(os.path.expanduser("~/.antimatter_daemon/.ipc_token"))
 
 # Rate Limiting
 _ip_failure_counts: dict[str, dict] = {}
@@ -28,25 +36,29 @@ def _record_failure(ip: str):
 
 class GatewayServer:
     def __init__(self, port: int = 8765):
-        self.port = port  # Default port; can be overridden before calling start()
+        self.port = port
         self.config = load_config()
         self.auth = Ed25519Auth(self.config.private_key_pem)
         self.router = MessageRouter(gateway=self)
-        
-        # Initialize E2EE Gateway Session
-        self.e2ee = E2EESession(role="gateway", private_key_b64=self.config.gateway_priv_x25519)
-        
-        # Persist keys if newly generated
+
+        # Generate a fresh ephemeral IPC token every time the gateway starts.
+        # Written to ~/.antimatter_daemon/.ipc_token (mode 0o600) so only the
+        # owning user can read it. Adapters must present this token in
+        # REGISTER_ADAPTER to prove they are a legitimate local process
+        # (AM-010, AM-020). The token changes on every restart so a captured
+        # token from a previous session cannot be replayed (AM-005 for IPC).
+        self.ipc_token = secrets.token_hex(32)
+        IPC_TOKEN_PATH.parent.mkdir(parents=True, exist_ok=True)
+        IPC_TOKEN_PATH.write_text(self.ipc_token)
+        os.chmod(IPC_TOKEN_PATH, 0o600)
+        logger.info("IPC token written to %s", IPC_TOKEN_PATH)
+
+        # Persist Ed25519 identity key if newly generated.
         needs_save = False
         if not self.config.private_key_pem or self.config.private_key_pem != self.auth.private_key_base64:
             self.config.private_key_pem = self.auth.private_key_base64
             self.config.pairing_token = self.auth.pairing_token
             needs_save = True
-            
-        if not self.config.gateway_priv_x25519 or self.config.gateway_priv_x25519 != self.e2ee.private_key_b64:
-            self.config.gateway_priv_x25519 = self.e2ee.private_key_b64
-            needs_save = True
-            
         if needs_save:
             save_config(self.config)
 
@@ -61,12 +73,11 @@ class GatewayServer:
             await websocket.close(1008, "Rate Limited")
             return
 
-        # 2. Origin Validation
-        # In a real setup, we check req.headers.origin against cloudflareaccess.com
-        # For simplicity in python websockets, we handle it natively or trust localhost.
-
         authenticated = False
         e2ee_established = False
+        # Fresh ephemeral X25519 session per connection — provides forward secrecy (AM-023, AM-043).
+        # Each client gets a unique ECDH exchange; compromise of one session key never exposes others.
+        session_e2ee = E2EESession(role="gateway")
 
         try:
             async for message in websocket:
@@ -79,37 +90,49 @@ class GatewayServer:
 
                 # Adapter Registration (Local IPC)
                 if msg_type == "REGISTER_ADAPTER":
+                    # Validate IPC token before accepting any adapter (AM-010, AM-020).
+                    # Token is a 32-byte hex secret generated fresh on every gateway start,
+                    # stored at ~/.antimatter_daemon/.ipc_token (0o600).
+                    presented_token = data.get("ipc_token", "")
+                    if not secrets.compare_digest(presented_token, self.ipc_token):
+                        remote = getattr(websocket, "remote_address", ("unknown", 0))
+                        agent_name = data.get("name", "")
+                        logger.warning("REGISTER_ADAPTER rejected: expected %s, got %s from %s (agent_name: '%s')", self.ipc_token, presented_token, remote, agent_name)
+                        await websocket.close(1008, "Unauthorized")
+                        return
+
                     agent_id = data.get("id")
-                    agent_name = data.get("name")
+                    agent_name = data.get("name", "")
                     workspace_root = data.get("workspaceRoot")
                     if agent_id and agent_name:
                         logger.info(f"Adapter registered: {agent_name} ({agent_id})")
                         await self.router.register_adapter(agent_id, agent_name, websocket, workspace_root)
-                        # We break out of the auth loop into a dedicated adapter loop
                         await self._adapter_loop(websocket, agent_id)
                         return
                     else:
                         await websocket.close(1008, "Missing adapter id/name")
                         return
 
-                # State 1: Legacy Ed25519 Auth Challenge (Client)
+                # State 1: Ed25519 Auth Challenge
                 if msg_type == "AUTH_CHALLENGE":
                     challenge = data.get("challenge")
                     if not challenge:
                         await websocket.close(1008, "Missing challenge")
                         return
                     
-                    logger.info(f"Received challenge: {challenge}")
+                    # Auth material logged at DEBUG only — not INFO (AM-008)
+                    logger.debug(f"Received challenge: {challenge}")
                     sig = self.auth.sign_challenge(challenge)
-                    logger.info(f"Generated signature: {sig}")
+                    logger.debug(f"Generated signature: {sig}")
                     
+                    # Send ephemeral pubkey so Android does ECDH with this session's key
                     await websocket.send(json.dumps({
                         "type": "AUTH_RESPONSE", 
                         "signature": sig,
-                        "pubkey": self.e2ee.public_key_b64
+                        "pubkey": session_e2ee.public_key_b64
                     }))
                     authenticated = True
-                    logger.info(f"Client {ip} authenticated successfully.")
+                    logger.info(f"Client {ip} authenticated.")
                     continue
                 
                 if not authenticated:
@@ -124,12 +147,12 @@ class GatewayServer:
                         await websocket.close(1008, "Missing X25519 pubkey")
                         return
                     
-                    self.e2ee.derive_session_keys(client_pubkey)
+                    session_e2ee.derive_session_keys(client_pubkey)
                     e2ee_established = True
-                    logger.info("E2EE Session established (ECDH + HKDF).")
+                    logger.info("E2EE Session established (ephemeral ECDH + HKDF).")
                     
                     # Add client to router ONLY after E2EE is established
-                    self.router.add_client(websocket)
+                    self.router.add_client(websocket, session_e2ee)
                     
                     # Notify adapters
                     await self.router.broadcast_system_state()
@@ -142,13 +165,10 @@ class GatewayServer:
                 # State 3: E2EE Encrypted Payload Routing
                 if "iv" in data and "ct" in data and "aad" in data:
                     try:
-                        # Decrypt client->server command
-                        plaintext = self.e2ee.decrypt(data, expected_direction="cmd:")
+                        plaintext = session_e2ee.decrypt(data, expected_direction="cmd:")
                         parsed_cmd = json.loads(plaintext)
-                        logger.info(f"Decrypted command: {parsed_cmd}")
-                        
-                        # Route to local adapter via IPC
-                        await self.router.route_to_adapter(parsed_cmd, self.e2ee, websocket)
+                        logger.debug(f"Routing command type: {parsed_cmd.get('type')}")
+                        await self.router.route_to_adapter(parsed_cmd, session_e2ee, websocket)
                     except ValueError as e:
                         logger.error(f"E2EE Decryption/AAD failed: {e}")
                         await websocket.close(1008, "Encryption Error")
@@ -167,29 +187,26 @@ class GatewayServer:
     async def _adapter_loop(self, websocket, agent_id: str):
         """
         Dedicated loop for listening to incoming messages from a local adapter.
-        When an adapter sends a message, it needs to be broadcast or routed to clients.
+        When an adapter sends a message, stamp agentId and broadcast to all clients.
+        Each client connection has its own session_e2ee, so we must broadcast using
+        per-client encryption inside broadcast_to_clients.
         """
         try:
             async for message in websocket:
                 try:
                     data = json.loads(message)
                     msg_type = data.get("type", "UNKNOWN")
-                    if msg_type == "STEP_BATCH":
-                        steps = data.get("steps", [])
-                        logger.info(f"[Adapter -> Gateway] Received STEP_BATCH with {len(steps)} steps")
-                    elif msg_type == "DEBUG_ERROR":
-                        logger.error(f"[Adapter -> Gateway] DEBUG_ERROR: {data.get('message')}")
+                    if msg_type == "DEBUG_ERROR":
+                        logger.error(f"[Adapter -> Gateway] DEBUG_ERROR: {str(data.get('message', ''))[:200]}")
                     else:
-                        logger.info(f"[Adapter -> Gateway] Received message type: {msg_type}")
+                        logger.debug(f"[Adapter -> Gateway] Received message type: {msg_type}")
                 except Exception:
                     continue
                 
-                # Currently we only have one e2ee session and one client.
-                # If we have multiple clients, we need to map adapter messages to clients.
-                # For now, we broadcast to all connected, authenticated clients.
                 if isinstance(data, dict):
                     data["agentId"] = agent_id
-                await self.router.broadcast_to_clients(data, self.e2ee)
+                # broadcast_to_clients encrypts per client using each client's session key
+                await self.router.broadcast_to_clients_encrypted(data)
                 
         except ConnectionClosed:
             logger.info(f"Adapter connection closed: {agent_id}")
@@ -211,25 +228,112 @@ async def main_async(port: int = 8765):
     server = GatewayServer(port=port)
     await server.start()
 
+def daemonize(log_path: Path, pid_path: Path):
+    if pid_path.exists():
+        try:
+            pid = int(pid_path.read_text().strip())
+            os.kill(pid, 0)
+            print(f"Gateway is already running (PID: {pid}).")
+            sys.exit(1)
+        except OSError:
+            pass # Stale PID file
+
+    # First fork
+    try:
+        if os.fork() > 0:
+            sys.exit(0)
+    except OSError as e:
+        sys.stderr.write(f"Fork #1 failed: {e}\n")
+        sys.exit(1)
+
+    os.setsid()
+    os.umask(0)
+
+    # Second fork
+    try:
+        if os.fork() > 0:
+            sys.exit(0)
+    except OSError as e:
+        sys.stderr.write(f"Fork #2 failed: {e}\n")
+        sys.exit(1)
+
+    sys.stdout.flush()
+    sys.stderr.flush()
+
+    with open("/home/saif/.antimatter_daemon/gateway.log", "r") as f:
+        os.dup2(f.fileno(), sys.stdin.fileno())
+    with open("/home/saif/.antimatter_daemon/gateway.log", "a+") as f:
+        os.dup2(f.fileno(), sys.stdout.fileno())
+        os.dup2(f.fileno(), sys.stderr.fileno())
+
+    # Write PID
+    pid_path.parent.mkdir(parents=True, exist_ok=True)
+    pid_path.write_text(str(os.getpid()))
+
+    # Setup file logging
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    handler = logging.handlers.RotatingFileHandler(
+        log_path, maxBytes=5 * 1024 * 1024, backupCount=3
+    )
+    handler.setFormatter(logging.Formatter("[%(asctime)s] [%(levelname)s] %(message)s"))
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.INFO)
+    root_logger.addHandler(handler)
+    
+    # Suppress verbose websocket connection errors
+    logging.getLogger("websockets.server").setLevel(logging.CRITICAL)
+
+def stop_daemon(pid_path: Path):
+    if not pid_path.exists():
+        print("Gateway is not running (no PID file found).")
+        return
+
+    try:
+        pid = int(pid_path.read_text().strip())
+        os.kill(pid, signal.SIGTERM)
+        print(f"Stopped Gateway (PID: {pid}).")
+        pid_path.unlink(missing_ok=True)
+    except ProcessLookupError:
+        print("Gateway was not running (stale PID file).")
+        pid_path.unlink(missing_ok=True)
+    except Exception as e:
+        print(f"Error stopping gateway: {e}")
+
+def check_status(pid_path: Path):
+    if not pid_path.exists():
+        print("Gateway is NOT running.")
+        return
+
+    try:
+        pid = int(pid_path.read_text().strip())
+        os.kill(pid, 0)
+        print(f"Gateway is RUNNING (PID: {pid}).")
+    except OSError:
+        print("Gateway is NOT running (stale PID file found).")
+
 def main():
     import argparse
     from antimatter_shared_config.config import load_config, save_config
 
-    logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
+    daemon_dir = Path(os.path.expanduser("~/.antimatter_daemon"))
+    pid_path = daemon_dir / "gateway.pid"
+    log_path = daemon_dir / "gateway.log"
 
-    # Suppress verbose websocket connection errors (e.g. EOFError during Cloudflare TCP health checks)
-    logging.getLogger("websockets.server").setLevel(logging.CRITICAL)
-
-    parser = argparse.ArgumentParser(prog="antimatter", description="Antimatter E2EE Gateway")
+    parser = argparse.ArgumentParser(prog="antimatter-gateway", description="Antimatter E2EE Gateway")
     parser.add_argument("--port", type=int, default=8765, help="Port to run the Gateway on")
     
     subparsers = parser.add_subparsers(dest="command")
     
+    # Start/Stop/Status
+    subparsers.add_parser("start", help="Start the gateway as a background daemon")
+    subparsers.add_parser("stop", help="Stop the background gateway daemon")
+    subparsers.add_parser("status", help="Check the status of the gateway daemon")
+
     # Interactive Setup Command
-    setup_parser = subparsers.add_parser("setup", help="Interactive setup for Cloudflare Zero Trust")
+    subparsers.add_parser("setup", help="Interactive setup for Cloudflare Zero Trust")
     
     # QR Command
-    qr_parser = subparsers.add_parser("qr", help="Show the pairing QR code and exit")
+    subparsers.add_parser("pair", help="Show the pairing QR code and exit")
 
     # Config Command
     config_parser = subparsers.add_parser("config", help="Manage gateway configuration")
@@ -240,7 +344,26 @@ def main():
     set_parser.add_argument("value", help="Value to set")
     
     args = parser.parse_args()
+
+    # Configure stdout logging for interactive commands
+    if args.command not in ("start",):
+        logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
+        logging.getLogger("websockets.server").setLevel(logging.CRITICAL)
     
+    if args.command == "start":
+        print(f"Starting Antimatter Gateway in background... (Logs: {log_path})")
+        daemonize(log_path, pid_path)
+        asyncio.run(main_async(args.port))
+        return
+
+    if args.command == "stop":
+        stop_daemon(pid_path)
+        return
+        
+    if args.command == "status":
+        check_status(pid_path)
+        return
+
     if args.command == "setup":
         import getpass
         config = load_config()
@@ -270,7 +393,7 @@ def main():
         print("\n✅ Configuration saved securely!")
         return
 
-    if args.command == "qr":
+    if args.command == "pair" or args.command == "qr":
         from antimatter_gateway.qr import main as qr_main
         qr_main()
         return
@@ -286,8 +409,8 @@ def main():
                 print(f"❌ Unknown config key: {args.key}")
         return
 
-    # Otherwise, start the server
-    asyncio.run(main_async(args.port))
+    # If no valid subcommand is provided, show help
+    parser.print_help()
 
 if __name__ == "__main__":
     main()

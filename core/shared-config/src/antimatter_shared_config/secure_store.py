@@ -44,7 +44,7 @@ class HeadlessVault:
             algorithm=hashes.SHA256(),
             length=32,
             salt=salt,
-            iterations=100000,
+            iterations=600_000,  # OWASP 2023 minimum for PBKDF2-HMAC-SHA256
         )
         return kdf.derive(password.encode('utf-8'))
         

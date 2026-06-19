@@ -2,7 +2,8 @@
 const { spawnSync } = require('child_process');
 
 console.log('🚀 Booting Antimatter Gateway via uvx...');
-const result = spawnSync('uvx', ['antimatter-gateway'], { stdio: 'inherit', shell: true });
+const args = process.argv.slice(2);
+const result = spawnSync('uvx', ['antimatter-gateway', ...args], { stdio: 'inherit', shell: true });
 
 if (result.error || result.status !== 0) {
     console.error('\n❌ Failed to start the Antimatter Gateway.');

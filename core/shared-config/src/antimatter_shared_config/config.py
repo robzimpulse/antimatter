@@ -11,7 +11,6 @@ class AntimatterConfig(BaseModel):
     cloudflare_client_secret: str | None = None
     pairing_token: str | None = None
     private_key_pem: str | None = None
-    gateway_priv_x25519: str | None = None
     allowed_workspaces: list[str] = Field(default_factory=list)
 
 from .secure_store import get_secret, set_secret
@@ -31,7 +30,6 @@ def load_config() -> AntimatterConfig:
     if val := get_secret("cloudflare_client_secret"): config.cloudflare_client_secret = val
     if val := get_secret("pairing_token"): config.pairing_token = val
     if val := get_secret("private_key_pem"): config.private_key_pem = val
-    if val := get_secret("gateway_priv_x25519"): config.gateway_priv_x25519 = val
     
     return config
 
@@ -43,11 +41,10 @@ def save_config(config: AntimatterConfig) -> None:
     if config.cloudflare_client_secret: set_secret("cloudflare_client_secret", config.cloudflare_client_secret)
     if config.pairing_token: set_secret("pairing_token", config.pairing_token)
     if config.private_key_pem: set_secret("private_key_pem", config.private_key_pem)
-    if config.gateway_priv_x25519: set_secret("gateway_priv_x25519", config.gateway_priv_x25519)
-    
+
     # Dump only non-sensitive data to the JSON config file
     safe_data = config.model_dump(exclude_none=True, exclude={
-        "cloudflare_client_secret", "pairing_token", "private_key_pem", "gateway_priv_x25519"
+        "cloudflare_client_secret", "pairing_token", "private_key_pem"
     })
     
     # Write to a temporary file first for atomic replacement

@@ -301,4 +301,93 @@ export class BrainWatcher {
       this.connectionManager.broadcast({ type: 'DEBUG_ERROR', message: `processFile failed: ${e}` });
     }
   }
+
+  public async fetchHistoryPage(conversationId: string, offset: number, limit: number) {
+    const transcriptPath = path.join(this.brainPath, conversationId, '.system_generated', 'logs', 'transcript.jsonl');
+    try {
+      await fs.promises.access(transcriptPath);
+    } catch {
+      return;
+    }
+
+    try {
+      const content = await fs.promises.readFile(transcriptPath, 'utf8');
+      const lines = content.split('\n').filter(l => l.trim().length > 0);
+      const allSteps: { step: TrajectoryStep, index: number }[] = [];
+      let currentIndex = 0;
+
+      for (const line of lines) {
+        try {
+          const entry = JSON.parse(line);
+          let stepValue = entry.content || '';
+          let stepTool: string | undefined = undefined;
+          let stepCommand: string | undefined = undefined;
+
+          if (entry.type === 'USER_INPUT' && stepValue.includes('<USER_REQUEST>')) {
+            const match = stepValue.match(/<USER_REQUEST>([\s\S]*?)<\/USER_REQUEST>/);
+            if (match && match[1]) {
+              stepValue = match[1].trim();
+            }
+          }
+
+          if (entry.tool_calls && entry.tool_calls.length > 0) {
+            const firstTool = entry.tool_calls[0];
+            stepTool = firstTool.name;
+            if (firstTool.args) {
+              stepCommand = firstTool.args.CommandLine || firstTool.args.AbsolutePath || firstTool.args.query || firstTool.args.TargetFile || JSON.stringify(firstTool.args);
+            }
+          }
+
+          if (entry.type === 'PLANNER_RESPONSE') {
+            if (entry.thinking) {
+              let cleanThinking = entry.thinking;
+              const thinkingLines = cleanThinking.split('\n');
+              let filteredThinking = '';
+              for (const l of thinkingLines) {
+                  const lower = l.toLowerCase();
+                  if (!lower.includes('critical instruction') && !lower.includes('tool specificity')) {
+                      filteredThinking += l + '\n';
+                  }
+              }
+              cleanThinking = filteredThinking.trim();
+
+              const strippedOfPunctuation = cleanThinking.replace(/[#\s*\-=_]+/g, '').trim();
+              if (strippedOfPunctuation.length > 0) {
+                allSteps.push({
+                  step: { case: 'PLANNER_RESPONSE', value: cleanThinking, tool: undefined, command: undefined },
+                  index: currentIndex++
+                });
+              }
+            }
+
+            if (stepValue.trim() !== '') {
+              allSteps.push({
+                step: { case: 'TEXT', value: stepValue, tool: undefined, command: undefined },
+                index: currentIndex++
+              });
+            }
+            continue;
+          }
+
+          allSteps.push({
+            step: { case: entry.type, value: stepValue, tool: stepTool, command: stepCommand },
+            index: currentIndex++
+          });
+        } catch (e) {
+          // Skip malformed JSON
+        }
+      }
+
+      const pageSteps = allSteps.slice(offset, offset + limit);
+      const CHUNK_SIZE = 10;
+      for (let i = 0; i < pageSteps.length; i += CHUNK_SIZE) {
+        this.connectionManager.broadcast({ 
+          type: 'STEP_BATCH', 
+          steps: pageSteps.slice(i, i + CHUNK_SIZE) 
+        });
+      }
+    } catch (e) {
+      this.log(`[BrainWatcher] fetchHistoryPage error: ${e}`);
+    }
+  }
 }

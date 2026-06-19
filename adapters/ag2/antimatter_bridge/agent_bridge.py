@@ -196,6 +196,7 @@ class AgentBridge:
 
         await self.websocket.send(json.dumps({
             "type": "STEP_BATCH",
+            "conversationId": self.conversation_id,
             "steps": steps
         }))
 
@@ -244,6 +245,7 @@ class AgentBridge:
 
                         await self.websocket.send(json.dumps({
                             "type": "STEP_BATCH",
+                            "conversationId": self.conversation_id,
                             "steps": parsed_steps
                         }))
                 else:

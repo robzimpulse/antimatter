@@ -9,6 +9,7 @@ class AgentBridge:
         self.websocket = websocket
         self.agent = None
         self.app_data_dir = app_data_dir
+        self.active_session_id = current_convo_id
         self.conversation_id = current_convo_id
         self.step_index = 0
         # BUG-005: Initialize last_position here so poll_transcript never raises AttributeError
@@ -45,54 +46,46 @@ class AgentBridge:
         }))
 
     async def send_history(self):
-        brain_dir = os.path.join(self.app_data_dir, "brain")
-        conversations = []
-        if os.path.exists(brain_dir):
-            import json, re
-            for d in os.listdir(brain_dir):
-                d_path = os.path.join(brain_dir, d)
-                logs_dir = os.path.join(d_path, ".system_generated", "logs")
-                if os.path.isdir(logs_dir):
-                    transcript_path = os.path.join(logs_dir, "transcript.jsonl")
-                    if os.path.exists(transcript_path):
-                        timestamp = int(os.path.getmtime(transcript_path) * 1000)
-                        title = "New Conversation"
+        """Sends the history list of conversations.
+        Since ag2 connects to an external agent that doesn't explicitly expose conversation history,
+        we just return the current session as the history.
+        """
+        import os
+        import json
+        import re
+        
+        timestamp = 0
+        title = "Current Session"
+        transcript_path = os.path.join(self.app_data_dir, "brain", self.active_session_id, ".system_generated", "logs", "transcript.jsonl")
+        
+        if os.path.exists(transcript_path):
+            timestamp = int(os.path.getmtime(transcript_path) * 1000)
+            try:
+                with open(transcript_path, 'r', encoding='utf-8') as f:
+                    for line in f:
                         try:
-                            with open(transcript_path, 'r', encoding='utf-8') as f:
-                                for line in f:
-                                    try:
-                                        data = json.loads(line)
-                                        if data.get("type") == "USER_INPUT":
-                                            content = data.get("content", "")
-                                            match = re.search(r'<USER_REQUEST>\s*(.*?)\s*</USER_REQUEST>', content, re.DOTALL)
-                                            if match:
-                                                title = match.group(1).strip()
-                                            else:
-                                                title = re.sub(r'<[^>]+>', '', content).strip()
-                                            # Truncate title
-                                            if len(title) > 50:
-                                                title = title[:47] + "..."
-                                            break
-                                    except Exception:
-                                        pass
+                            data = json.loads(line)
+                            if data.get("type") == "USER_INPUT":
+                                content = data.get("content", "")
+                                match = re.search(r'<USER_REQUEST>\s*(.*?)\s*</USER_REQUEST>', content, re.DOTALL)
+                                if match:
+                                    title = match.group(1).strip()
+                                else:
+                                    title = re.sub(r'<[^>]+>', '', content).strip()
+                                # Truncate title
+                                if len(title) > 50:
+                                    title = title[:47] + "..."
+                                break
                         except Exception:
                             pass
-                        
-                        conversations.append({
-                            "id": d,
-                            "timestamp": timestamp,
-                            "title": title
-                        })
-        
-        # Sort descending by timestamp
-        conversations.sort(key=lambda x: x["timestamp"], reverse=True)
-        
-        if not conversations:
-            conversations = [{
-                "id": self.conversation_id,
-                "timestamp": 0,
-                "title": "Current Session"
-            }]
+            except Exception:
+                pass
+                
+        conversations = [{
+            "id": self.active_session_id,
+            "timestamp": timestamp,
+            "title": title
+        }]
 
         await self.websocket.send(json.dumps({
             "type": "HISTORY_LIST",

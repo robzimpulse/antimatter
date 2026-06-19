@@ -1,19 +1,20 @@
 # 🔄 CI/CD WORKFLOW DASHBOARD
 
-![Pass Rate](https://img.shields.io/badge/Pass%20Rate-65%25-brightgreen)
-![Total Runs](https://img.shields.io/badge/Total%20Runs-86-blue)
+![Pass Rate](https://img.shields.io/badge/Pass%20Rate-64%25-brightgreen)
+![Total Runs](https://img.shields.io/badge/Total%20Runs-87-blue)
 
 | Metric | Count |
 |--------|-------|
-| **Total Runs** | 86 |
+| **Total Runs** | 87 |
 | **Passed** | 56 |
-| **Failed** | 27 |
-| **Pass Rate** | 65% |
+| **Failed** | 28 |
+| **Pass Rate** | 64% |
 
 ## Recent Runs
 
 | Date (UTC) | Workflow | Status | Commit | URL |
 |------------|----------|--------|--------|-----|
+| 2026-06-19 20:16 | Android CI | ❌ FAIL | fix(ag): add missing fetchHistoryPage method to BrainWatcher | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27846333368) |
 | 2026-06-19 20:13 | Adapters CI | ✅ PASS | test(connect): fix NullPointerException in ConnectionViewModelTest | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27846410029) |
 | 2026-06-19 20:13 | iOS CI | ✅ PASS | test(connect): fix NullPointerException in ConnectionViewModelTest | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27846409892) |
 | 2026-06-19 20:11 | Adapters CI | ✅ PASS | fix(ag): add missing fetchHistoryPage method to BrainWatcher | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27846333358) |
@@ -63,4 +64,3 @@
 | 2026-06-15 22:22 | Graph Update: uv in /core |  /core/gateway |  /core/shared-fs #1414773591 | [View Log](✅ PASS,feat: implement native PTY terminal for iOS Android and Gateway,https://github.com/saifmukhtar/antimatter/actions/runs/27580235376) |
 | 2026-06-15 22:21 | Adapters CI | ❌ FAIL | feat: implement native PTY terminal for iOS Android and Gateway | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27580233236) |
 | 2026-06-15 22:21 | iOS CI | ✅ PASS | feat: implement native PTY terminal for iOS Android and Gateway | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27580233232) |
-| 2026-06-15 20:50 | CodeQL Advanced | ❌ FAIL | chore(deps-dev): bump form-data from 4.0.5 to 4.0.6 in /adapters/ag | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27575026906) |

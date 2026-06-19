@@ -4,18 +4,16 @@ build-backend = "hatchling.build"
 
 [project]
 name = "antimatter-ag2"
-version = "1.0.0"
-description = "Antimatter Bridge — companion daemon for Google AntiGravity IDE"
+version = "2.0.1"
+description = "Antimatter adapter for AG2 (AutoGen) CLI framework"
 readme = "README.md"
 license = { file = "LICENSE" }
 authors = [
     { name = "Saif Mukhtar", email = "saifmukhtar@saifmukhtar.dev" }
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 classifiers = [
     "Development Status :: 4 - Beta",
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Topic :: Software Development",
     "Topic :: Communications",
@@ -24,9 +22,8 @@ classifiers = [
 ]
 keywords = ["antigravity", "ai", "ide", "mobile", "bridge", "websocket", "android"]
 dependencies = [
-    "websockets>=11.0.0",
-    "cryptography>=41.0.0",
-    "qrcode>=7.0.0",
+    "websockets==15.0.1",
+    "google-antigravity==0.1.2",
 ]
 
 [project.optional-dependencies]
@@ -43,14 +40,14 @@ Documentation = "https://saifmukhtar.dev/docs/antimatter"
 Changelog = "https://github.com/saifmukhtar/antimatter/releases"
 
 [project.scripts]
-antimatter-ag2 = "antimatter_bridge.cli:main"
+antimatter-ag2 = "antimatter_ag2.cli:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["antimatter_bridge"]
+packages = ["antimatter_ag2"]
 
 [tool.hatch.build.targets.sdist]
 include = [
-    "antimatter_bridge",
+    "antimatter_ag2",
 ]
 
 [tool.pytest.ini_options]

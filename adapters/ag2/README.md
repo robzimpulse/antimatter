@@ -12,9 +12,14 @@ This adapter follows the **Independent Adapter Model**. It does NOT contain any 
 
 ## Building
 
+Using `pip`:
 ```bash
-uv build
-uv tool install .
+pip install antimatter-ag2
+```
+
+Using `uv` (recommended for isolation):
+```bash
+uv tool install antimatter-ag2
 ```
 
 For full system documentation, please see the `docs/` folder in the repository root.

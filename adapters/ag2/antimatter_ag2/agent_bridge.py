@@ -1,8 +1,9 @@
 import asyncio
 import json
+import logging
 import os
-import glob
-from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 class AgentBridge:
     def __init__(self, websocket, app_data_dir: str, current_convo_id: str):
@@ -48,7 +49,8 @@ class AgentBridge:
         brain_dir = os.path.join(self.app_data_dir, "brain")
         conversations = []
         if os.path.exists(brain_dir):
-            import json, re
+            import json
+            import re
             for d in os.listdir(brain_dir):
                 d_path = os.path.join(brain_dir, d)
                 logs_dir = os.path.join(d_path, ".system_generated", "logs")
@@ -99,6 +101,20 @@ class AgentBridge:
             "conversations": conversations
         }))
 
+    def _is_boilerplate(self, text: str) -> bool:
+        t = text.lower()
+        if t.startswith("#") and ("tool" in t or "instruction" in t):
+            return True
+        keywords = [
+            "critical instruction", "tool specificity", "tool usage",
+            "tool ecosystem", "tool repertoire", "instruction to avoid cat",
+            "eliminating the use of ls", "default to grep_search",
+            "actively avoiding using ls", "avoiding cat within bash",
+            "before making tool calls", "list related tools",
+            "tool list: `", "i must prioritize using the most specific tool"
+        ]
+        return any(k in t for k in keywords)
+
     def _parse_line(self, line: str):
         import json
         import re
@@ -132,28 +148,10 @@ class AgentBridge:
             elif msg_type == "PLANNER_RESPONSE":
                 thinking = data.get("thinking", "")
                 if thinking:
-                    clean_thinking = []
-                    for paragraph in thinking.split("\n\n"):
-                        p_lower = paragraph.lower()
-                        is_boilerplate = (
-                            "critical instruction" in p_lower or
-                            "tool specificity" in p_lower or
-                            "tool usage" in p_lower or
-                            "tool ecosystem" in p_lower or
-                            "tool repertoire" in p_lower or
-                            "instruction to avoid cat" in p_lower or
-                            "eliminating the use of ls" in p_lower or
-                            "default to grep_search" in p_lower or
-                            "actively avoiding using ls" in p_lower or
-                            "avoiding cat within bash" in p_lower or
-                            "before making tool calls" in p_lower or
-                            "list related tools" in p_lower or
-                            "tool list: `" in p_lower or
-                            "i must prioritize using the most specific tool" in p_lower or
-                            (p_lower.startswith("#") and ("tool" in p_lower or "instruction" in p_lower))
-                        )
-                        if not is_boilerplate:
-                            clean_thinking.append(paragraph)
+                    clean_thinking = [
+                        paragraph for paragraph in thinking.split("\n\n") 
+                        if not self._is_boilerplate(paragraph)
+                    ]
                     
                     final_thinking = "\n\n".join(clean_thinking).strip()
                     if final_thinking:
@@ -192,11 +190,17 @@ class AgentBridge:
                     self.last_position = f.tell()
 
             except Exception as e:
-                print(f"[Gateway] ERROR in reading transcript: {e}", flush=True)
+                logger.error("Failed to read transcript: %s", type(e).__name__)
+
+        await self.websocket.send(json.dumps({
+            "type": "SESSION_STATE",
+            "conversationId": convo_id,
+            "stepCount": len(steps)
+        }))
 
         await self.websocket.send(json.dumps({
             "type": "STEP_BATCH",
-            "conversationId": self.conversation_id,
+            "conversationId": convo_id,
             "steps": steps
         }))
 
@@ -296,13 +300,21 @@ class AgentBridge:
         }))
 
     async def read_artifact(self, path: str):
-        if os.path.exists(path):
+        import pathlib
+        p = pathlib.Path(path).resolve()
+        brain_dir = pathlib.Path(self.app_data_dir) / "brain"
+        try:
+            p.relative_to(brain_dir.resolve())
+        except ValueError:
+            return  # Path traversal rejected
+            
+        if p.exists():
             try:
-                with open(path, 'r', encoding='utf-8') as f:
+                with open(p, 'r', encoding='utf-8') as f:
                     content = f.read()
                 await self.websocket.send(json.dumps({
                     "type": "ARTIFACT_CONTENT",
-                    "path": path,
+                    "path": str(p),
                     "content": content
                 }))
             except Exception:
@@ -352,14 +364,30 @@ class AgentBridge:
         }))
 
     async def read_file(self, path: str):
+        import pathlib
+        workspace = pathlib.Path(os.getcwd()).resolve()
+        p = pathlib.Path(path)
+        if not p.is_absolute():
+            p = workspace / p
+        p = p.resolve()
+        
         try:
-            with open(path, 'r', encoding='utf-8') as f:
+            p.relative_to(workspace)
+        except ValueError:
+            await self.websocket.send(json.dumps({
+                "type": "ERROR",
+                "message": "Path traversal rejected"
+            }))
+            return
+
+        try:
+            with open(p, 'r', encoding='utf-8') as f:
                 content = f.read()
             await self.websocket.send(json.dumps({
                 "type": "FILE_CONTENT",
-                "path": path,
+                "path": str(p),
                 "content": content,
-                "language": "markdown" if path.endswith(".md") else "text"
+                "language": "markdown" if str(p).endswith(".md") else "text"
             }))
         except Exception as e:
             await self.websocket.send(json.dumps({
@@ -380,7 +408,6 @@ class AgentBridge:
             
             for i, b64_str in enumerate(images):
                 try:
-                    # Strip data URI prefix if present (e.g. data:image/jpeg;base64,)
                     if "," in b64_str:
                         b64_str = b64_str.split(",")[1]
                         
@@ -392,12 +419,13 @@ class AgentBridge:
                     with open(filepath, "wb") as f:
                         f.write(img_data)
                         
-                    text += f"\n\n![Image](file://{filepath})"
+                    text += f"\\n\\n![Image](file://{filepath})"
                 except Exception as e:
-                    print(f"Failed to decode image {i}: {e}")
+                    # Log only the error type — never log b64 image data
+                    logger.warning("Failed to decode image %d: %s", i, type(e).__name__)
 
-        # Notify Android app we received the input
-        await self._send_step("userInput", text)
+        # We DO NOT send userInput directly anymore because Agent.chat() or agentapi will append it to the file,
+        # and poll_transcript will pick it up and broadcast it properly, avoiding duplicates.
         await self._send_generating()
 
         try:
@@ -405,21 +433,25 @@ class AgentBridge:
             agentapi_path = os.path.expanduser("~/.gemini/antigravity/bin/agentapi")
             
             proc = await asyncio.create_subprocess_exec(
-                agentapi_path, "send-message", self.conversation_id, text,
+                agentapi_path, "send-message", str(self.conversation_id), str(text),
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE
             )
             stdout, stderr = await proc.communicate()
             
             if proc.returncode != 0:
-                await self._send_step("errorMessage", f"Failed to inject message into IDE: {stderr.decode()}")
+                if b"ANTIGRAVITY_LS_ADDRESS is not set" in stderr:
+                    logger.error("FATAL: Adapter MUST be started from inside the Antigravity IDE integrated terminal!")
+                # Cap stderr to avoid binary blobs filling the step log
+                stderr_preview = stderr.decode(errors="replace")[:200]
+                await self._send_step("errorMessage", f"Failed to inject message into IDE: {stderr_preview}")
             else:
-                # Let the IDE handle generating the response!
-                await self._send_step("ephemeralMessage", "Message successfully queued to IDE Agent. Pull to refresh history.")
+                await self._send_step("ephemeralMessage", "Message queued to IDE Agent.")
         except Exception as e:
             await self._send_step("errorMessage", f"Agent Error: {str(e)}")
         finally:
             await self._send_response_complete()
+
 
     async def cleanup(self):
         # BUG-006: Signal poll_transcript to stop gracefully

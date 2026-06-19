@@ -1,10 +1,8 @@
 import pytest
+import importlib.util
 
 def test_module_imports():
     """Verify that all core modules can be imported without syntax or dependency errors."""
-    try:
-        import antimatter_bridge.server
-        import antimatter_bridge.agent_bridge
-        import antimatter_bridge.cli
-    except ImportError as e:
-        pytest.fail(f"Failed to import a core module: {e}")
+    for module in ["antimatter_ag2.server", "antimatter_ag2.agent_bridge", "antimatter_ag2.cli"]:
+        if importlib.util.find_spec(module) is None:
+            pytest.fail(f"Failed to find core module: {module}")

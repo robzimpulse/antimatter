@@ -1,15 +1,16 @@
 import asyncio
 import json
 import logging
-import websockets
 import os
+import websockets
 from pathlib import Path
 from .agent_bridge import AgentBridge
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger(__name__)
 
 APP_DATA_DIR = Path(os.environ.get("AGY_APP_DATA_DIR", os.path.expanduser("~/.gemini/antigravity")))
+IPC_TOKEN_PATH = Path(os.path.expanduser("~/.antimatter_daemon/.ipc_token"))
 
 def get_latest_conversation_id(app_data_dir: Path) -> str:
     brain_dir = app_data_dir / "brain"
@@ -38,18 +39,45 @@ def get_default_workspace() -> str:
 
 async def main():
     uri = "ws://127.0.0.1:8765"
+
+    # Read the IPC token written by the gateway on startup.
+    # If missing, the gateway is not running — fail fast with a clear message.
+    if not IPC_TOKEN_PATH.exists():
+        print(
+            f"[antimatter-ag2] Gateway IPC token not found at {IPC_TOKEN_PATH}.\n"
+            "Make sure the Antimatter Gateway is running before starting the adapter."
+        )
+        return
     logger.info(f"[AG2 Adapter] Connecting to Gateway at {uri}...")
-    
+
     while True:
         try:
+            # Read token inside the loop so we get the fresh token if Gateway restarts
+            # Read token inside the loop so we get the fresh token if Gateway restarts
+            if IPC_TOKEN_PATH.exists():
+                ipc_token = IPC_TOKEN_PATH.read_text().strip()
+                logger.info(f"[AG2 Adapter] Found token of length {len(ipc_token)}")
+            else:
+                ipc_token = ""
+                logger.warning(f"[AG2 Adapter] Token file {IPC_TOKEN_PATH} not found!")
+                
             async with websockets.connect(uri) as websocket:
                 logger.info("[AG2 Adapter] Connected to Gateway IPC.")
-                
+
                 import uuid
-                # Register
+                id_file = APP_DATA_DIR / ".agent_id"
+                if id_file.exists():
+                    agent_id = id_file.read_text().strip()
+                else:
+                    agent_id = str(uuid.uuid4())
+                    id_file.write_text(agent_id)
+
+                # Include ipc_token so the gateway can verify this is a
+                # legitimate local adapter and not a rogue process (AM-010).
                 await websocket.send(json.dumps({
                     "type": "REGISTER_ADAPTER",
-                    "id": str(uuid.uuid4()),
+                    "ipc_token": ipc_token,
+                    "id": agent_id,
                     "name": "ag2",
                     "workspaceRoot": get_default_workspace()
                 }))
@@ -103,6 +131,7 @@ async def main():
                                     await bridge.read_file(path)
                                 
                             elif msg_type == "SEND_MESSAGE":
+                                logger.debug("[AG2 Adapter] Received SEND_MESSAGE")
                                 text = data.get("text", "")
                                 images = data.get("images", [])
                                 asyncio.create_task(bridge.process_message(text, images))

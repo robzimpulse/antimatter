@@ -1,6 +1,9 @@
 import WebSocket from 'ws';
 import { randomUUID } from 'crypto';
 import * as vscode from 'vscode';
+import * as os from 'os';
+import * as fs from 'fs';
+import * as path from 'path';
 import { ConnectionManager } from '../../feature/connect/ConnectionManager';
 import { MessageRouter } from './MessageRouter';
 
@@ -30,12 +33,57 @@ export class GatewayClient {
 
         this.client.on('open', () => {
             this.log('Connected to Gateway IPC.');
+            
+            let ipcToken = '';
+            try {
+                // VS Code might be running in a Snap or Flatpak sandbox where os.homedir()
+                // returns a sandboxed path (e.g. ~/snap/code/...). We try multiple fallbacks.
+                const username = (os.userInfo() || {}).username;
+                const isMac = process.platform === 'darwin';
+                const isWin = process.platform === 'win32';
+                
+                let dynamicHome = '';
+                if (isWin) {
+                    dynamicHome = process.env.USERPROFILE || '';
+                } else if (isMac) {
+                    dynamicHome = username ? `/Users/${username}` : '';
+                } else {
+                    dynamicHome = username === 'root' ? '/root' : (username ? `/home/${username}` : '');
+                }
+
+                const possibleHomes = [
+                    os.homedir(),
+                    process.env.HOME,
+                    (os.userInfo() || {}).homedir,
+                    dynamicHome
+                ].filter(Boolean) as string[];
+
+                // Unique paths
+                const uniqueHomes = [...new Set(possibleHomes)];
+
+                for (const home of uniqueHomes) {
+                    const tokenPath = path.join(home, '.antimatter_daemon', '.ipc_token');
+                    if (fs.existsSync(tokenPath)) {
+                        ipcToken = fs.readFileSync(tokenPath, 'utf8').trim();
+                        this.log(`Successfully read IPC token from: ${tokenPath}`);
+                        break;
+                    }
+                }
+
+                if (!ipcToken) {
+                    this.log(`CRITICAL: Could not find .ipc_token in any checked home directories: ${uniqueHomes.join(', ')}`);
+                }
+            } catch (e) {
+                this.log(`Failed to read IPC token: ${e}`);
+            }
+
             // Register as the ag adapter, sending a stable UUID so the Gateway
             // can correctly key this adapter for targeted IPC routing.
             this.client!.send(JSON.stringify({
                 type: 'REGISTER_ADAPTER',
                 id: this.adapterId,
                 name: 'ag',
+                ipc_token: ipcToken,
                 workspaceRoot: this.workspaceRoot
             }));
             // Update the ConnectionManager with the fresh socket after every

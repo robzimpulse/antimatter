@@ -1,19 +1,20 @@
 # 🔄 CI/CD WORKFLOW DASHBOARD
 
-![Pass Rate](https://img.shields.io/badge/Pass%20Rate-64%25-brightgreen)
-![Total Runs](https://img.shields.io/badge/Total%20Runs-79-blue)
+![Pass Rate](https://img.shields.io/badge/Pass%20Rate-65%25-brightgreen)
+![Total Runs](https://img.shields.io/badge/Total%20Runs-80-blue)
 
 | Metric | Count |
 |--------|-------|
-| **Total Runs** | 79 |
-| **Passed** | 51 |
+| **Total Runs** | 80 |
+| **Passed** | 52 |
 | **Failed** | 25 |
-| **Pass Rate** | 64% |
+| **Pass Rate** | 65% |
 
 ## Recent Runs
 
 | Date (UTC) | Workflow | Status | Commit | URL |
 |------------|----------|--------|--------|-----|
+| 2026-06-19 20:06 | iOS CI | ✅ PASS | chore(deps): bump astro @astrojs/starlight and @astrojs/starlight-tailwind | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27846157693) |
 | 2026-06-19 20:06 | npm_and_yarn in /docs for astro |  @astrojs/starlight |  @astrojs/starlight-tailwind - Update #1423490383 | [View Log](✅ PASS,chore: update workflow dashboard,https://github.com/saifmukhtar/antimatter/actions/runs/27846110645) |
 | 2026-06-19 20:05 | npm_and_yarn in /docs for esbuild - Update #1423490227 | ❌ FAIL | chore: update workflow dashboard | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27846102222) |
 | 2026-06-19 20:04 | Graph Update: pip in /core/gateway |  /core/shared-config |  /core/shared-crypto | [View Log]( /core/shared-fs, /core/shared-protocol #1423489431,✅ PASS,chore: update root config and documentation,https://github.com/saifmukhtar/antimatter/actions/runs/27846060622) |
@@ -63,4 +64,3 @@
 | 2026-06-15 20:42 | Android CI | ❌ FAIL | Chore: Update Readme | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27574859444) |
 | 2026-06-15 20:41 | npm_and_yarn in /adapters/ag for form-data - Update #1414549423 | ✅ PASS | Fix: Remove outputs | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27574975318) |
 | 2026-06-15 20:40 | Adapters CI | ❌ FAIL | Fix: Remove outputs | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27574951546) |
-| 2026-06-15 20:40 | Core CI | ❌ FAIL | Fix: Remove outputs | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27574950579) |

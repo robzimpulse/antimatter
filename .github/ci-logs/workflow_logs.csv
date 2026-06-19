@@ -78,3 +78,4 @@ Date,Workflow,Status,Commit,URL
 2026-06-19 20:04,Graph Update: pip in /core/gateway, /core/shared-config, /core/shared-crypto, /core/shared-fs, /core/shared-protocol #1423489431,✅ PASS,chore: update root config and documentation,https://github.com/saifmukhtar/antimatter/actions/runs/27846060622
 2026-06-19 20:05,npm_and_yarn in /docs for esbuild - Update #1423490227,❌ FAIL,chore: update workflow dashboard,https://github.com/saifmukhtar/antimatter/actions/runs/27846102222
 2026-06-19 20:06,npm_and_yarn in /docs for astro, @astrojs/starlight, @astrojs/starlight-tailwind - Update #1423490383,✅ PASS,chore: update workflow dashboard,https://github.com/saifmukhtar/antimatter/actions/runs/27846110645
+2026-06-19 20:06,iOS CI,✅ PASS,chore(deps): bump astro @astrojs/starlight and @astrojs/starlight-tailwind,https://github.com/saifmukhtar/antimatter/actions/runs/27846157693

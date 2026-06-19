@@ -21,9 +21,7 @@
 #-renamesourcefileattribute SourceFile
 
 # Gson rules for Antimatter network models
--keep class dev.saifmukhtar.antimatter.core.network.InboundMessage** { *; }
--keep class dev.saifmukhtar.antimatter.core.network.OutboundMessage** { *; }
--keep class dev.saifmukhtar.antimatter.core.network.TrajectoryStep { *; }
+-keep class dev.saifmukhtar.antimatter.core.network.** { *; }
 
 # OkHttp
 -keepattributes Signature

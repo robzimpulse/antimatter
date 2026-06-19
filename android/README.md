@@ -44,5 +44,8 @@ To build the app locally from source:
 ./gradlew assembleDebug
 ```
 
+### Dependency Note (Biometric)
+You may notice the app uses `androidx.biometric:biometric:1.2.0-alpha05`. While normally `alpha` indicates unstable software, this specific version is considered the industry standard for production apps needing proper Device Credential (PIN/Pattern) fallback on Android 11+ (API 30+). The stable `1.1.0` release has known bugs with these modern APIs, so this alpha version is intentionally selected for maximum stability.
+
 ---
 **Repository**: [github.com/saifmukhtar/antimatter](https://github.com/saifmukhtar/antimatter)

@@ -91,7 +91,10 @@ fun AntimatterNavigation(
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showCrashDialog = false }) {
+                TextButton(onClick = { 
+                    LocalCrashHandler.clearLogs(context)
+                    showCrashDialog = false 
+                }) {
                     Text("Dismiss")
                 }
             }

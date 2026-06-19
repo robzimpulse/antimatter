@@ -14,6 +14,9 @@ interface AppDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAgent(agent: AgentEntity)
 
+    @Query("DELETE FROM agents")
+    suspend fun deleteAllAgents()
+
     @Query("SELECT * FROM agents")
     fun getAllAgentsFlow(): Flow<List<AgentEntity>>
 

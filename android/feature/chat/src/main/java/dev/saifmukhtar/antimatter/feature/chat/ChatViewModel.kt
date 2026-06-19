@@ -15,6 +15,10 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import dev.saifmukhtar.antimatter.core.data.UserPreferencesRepository
 import dev.saifmukhtar.antimatter.core.data.AppDatabase
@@ -84,9 +88,15 @@ class ChatViewModel @Inject constructor(
             }
         }
 
+        @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
         viewModelScope.launch(Dispatchers.IO) {
-            val localConversations = appDao.getAllConversationsFlow().firstOrNull()
-            if (localConversations != null && localConversations.isNotEmpty()) {
+            _uiState.map { it.activeAgentId }.distinctUntilChanged().flatMapLatest { agentId ->
+                if (agentId != null) {
+                    appDao.getConversationsForAgentFlow(agentId)
+                } else {
+                    flowOf(emptyList())
+                }
+            }.collect { localConversations ->
                 val historyList = localConversations.map { 
                     dev.saifmukhtar.antimatter.core.network.ConversationSummary(id = it.id, title = it.title, timestamp = it.timestamp) 
                 }
@@ -161,6 +171,7 @@ class ChatViewModel @Inject constructor(
             is InboundMessage.HistoryList -> message.agentId
             is InboundMessage.ArtifactsList -> message.agentId
             is InboundMessage.ArtifactContent -> message.agentId
+            is InboundMessage.Step -> message.agentId
             else -> null
         }
         
@@ -222,6 +233,17 @@ class ChatViewModel @Inject constructor(
                 }
             }
             is InboundMessage.StepBatch -> {
+                val targetCid = message.conversationId
+                val currentCid = _uiState.value.conversationId
+
+                // Guard: If StepBatch belongs to a different conversation, save it to DB but don't update UI
+                if (targetCid != null && targetCid != currentCid) {
+                    viewModelScope.launch(Dispatchers.IO) {
+                        appDao.insertSteps(message.steps.map { it.step.toEntity(targetCid, it.index) })
+                    }
+                    return
+                }
+
                 _uiState.update { state ->
                     val newSteps = state.steps.toMutableList()
                     var stillGenerating = state.isGenerating
@@ -242,7 +264,8 @@ class ChatViewModel @Inject constructor(
                             else -> {}
                         }
                     }
-                    state.conversationId?.let { cid ->
+                    val cidToSave = targetCid ?: state.conversationId
+                    cidToSave?.let { cid ->
                         viewModelScope.launch(Dispatchers.IO) {
                             appDao.insertSteps(message.steps.map { it.step.toEntity(cid, it.index) })
                         }
@@ -276,7 +299,7 @@ class ChatViewModel @Inject constructor(
                     message.conversations.forEach { summary ->
                         val existing = appDao.getConversation(summary.id)
                         if (existing == null) {
-                            appDao.insertConversation(ConversationEntity(id = summary.id, title = summary.title, timestamp = summary.timestamp))
+                            appDao.insertConversation(ConversationEntity(id = summary.id, title = summary.title, timestamp = summary.timestamp, agentId = message.agentId ?: "legacy"))
                         }
                     }
                 }
@@ -356,6 +379,7 @@ class ChatViewModel @Inject constructor(
                 }
 
                 viewModelScope.launch(Dispatchers.IO) {
+                    appDao.deleteAllAgents()
                     message.agents.forEach { info ->
                         appDao.insertAgent(dev.saifmukhtar.antimatter.core.data.AgentEntity(id = info.id, name = info.name, status = info.status, lastSeen = System.currentTimeMillis()))
                     }

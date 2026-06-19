@@ -73,10 +73,11 @@ sealed class InboundMessage {
 
     data class Step(
         val step: TrajectoryStep = TrajectoryStep(),
-        val index: Int = 0
+        val index: Int = 0,
+        val agentId: String? = null
     ) : InboundMessage()
 
-    data class StepBatch(val steps: List<Step> = emptyList(), val agentId: String? = null) : InboundMessage()
+    data class StepBatch(val steps: List<Step> = emptyList(), val agentId: String? = null, val conversationId: String? = null) : InboundMessage()
 
     data class Generating(val conversationId: String = "", val agentId: String? = null) : InboundMessage()
     data class ResponseComplete(val conversationId: String = "", val agentId: String? = null) : InboundMessage()
@@ -103,10 +104,10 @@ sealed class InboundMessage {
         val tree: List<FileNode> = emptyList(),
         val workspace: String = ""
     ) : InboundMessage()
-    data class CloudflareUrl(val url: String = "") : InboundMessage()
-    data class Error(val message: String = "") : InboundMessage()
-    data class SystemAlert(val title: String = "", val body: String = "") : InboundMessage()
-    data class SystemNotification(val title: String = "", val body: String = "") : InboundMessage()
+    data class CloudflareUrl(val url: String = "", val agentId: String? = null) : InboundMessage()
+    data class Error(val message: String = "", val agentId: String? = null) : InboundMessage()
+    data class SystemAlert(val title: String = "", val body: String = "", val agentId: String? = null) : InboundMessage()
+    data class SystemNotification(val title: String = "", val body: String = "", val agentId: String? = null) : InboundMessage()
     data class HistoryList(val conversations: List<ConversationSummary> = emptyList(), val agentId: String? = null) : InboundMessage()
     data class AuthResponse(val signature: String = "", val pubkey: String = "") : InboundMessage()
     data class ArtifactsList(val artifacts: List<FileNode> = emptyList(), val agentId: String? = null) : InboundMessage()
@@ -115,9 +116,10 @@ sealed class InboundMessage {
         val agents: List<AgentInfo> = emptyList(),
         @SerializedName("allowed_workspaces") val allowedWorkspaces: List<String> = emptyList(),
         // Gateway's active workspace — independent of any connected agent
-        @SerializedName("current_workspace") val currentWorkspace: String = ""
+        @SerializedName("current_workspace") val currentWorkspace: String = "",
+        val agentId: String? = null
     ) : InboundMessage()
-    data class PtyOutput(val ptyId: String = "", val data: String = "") : InboundMessage()
+    data class PtyOutput(val ptyId: String = "", val data: String = "", val agentId: String? = null) : InboundMessage()
 
     data class Ack(val id: String = "") : InboundMessage()
     object Unknown : InboundMessage()

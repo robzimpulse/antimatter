@@ -11,6 +11,7 @@ import java.util.Date
 import java.util.Locale
 import android.os.Build
 import android.content.Intent
+import android.content.ClipData
 import androidx.core.content.FileProvider
 
 class LocalCrashHandler(
@@ -90,15 +91,22 @@ class LocalCrashHandler(
                 putExtra(Intent.EXTRA_SUBJECT, "Antimatter Crash Log")
                 putExtra(Intent.EXTRA_TEXT, "Please find the attached crash log from the Antimatter Android app.")
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                clipData = ClipData.newRawUri("Crash Log", uri)
             }
             
             context.startActivity(Intent.createChooser(intent, "Share Crash Log").apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             })
             
-            // After sharing, we could optionally clear logs, but let's just let the user do it manually or rely on bloat protection.
-            // Actually, to stop prompting the user every startup, let's delete all logs after we open the share sheet.
-            files.forEach { it.delete() }
+            // Delay deletion by 60 seconds to ensure the receiving app has time to read the FileProvider URI
+            android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                files.forEach { it.delete() }
+            }, 60000)
+        }
+
+        fun clearLogs(context: Context) {
+            val logsDir = File(context.filesDir, "crash_logs")
+            logsDir.listFiles()?.forEach { it.delete() }
         }
     }
 }

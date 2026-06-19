@@ -8,6 +8,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.automirrored.filled.Article
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -270,7 +272,7 @@ fun FileTreeNode(
             if (node.isDir) {
                 Spacer(modifier = Modifier.weight(1f))
                 Icon(
-                    imageVector = if (isExpanded) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowRight,
+                    imageVector = if (isExpanded) Icons.Default.KeyboardArrowDown else Icons.AutoMirrored.Filled.KeyboardArrowRight,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
                     modifier = Modifier.size(20.dp)
@@ -338,7 +340,7 @@ private fun getIconForNode(node: FileNode, isExpanded: Boolean): Pair<ImageVecto
         "kt", "java" -> Pair(Icons.Default.Code, Color(0xFFC62828)) // Kotlin/Java
         "xml" -> Pair(Icons.Default.Code, Color(0xFFE65100))
         "json" -> Pair(Icons.Default.DataObject, Color(0xFF2E7D32))
-        "md", "txt" -> Pair(Icons.Default.Article, Color(0xFF4527A0))
+        "md", "txt" -> Pair(Icons.AutoMirrored.Filled.Article, Color(0xFF4527A0))
         "png", "jpg", "jpeg", "webp" -> Pair(Icons.Default.Image, Color(0xFF00695C))
         else -> Pair(Icons.Default.Description, Color(0xFF616161))
     }

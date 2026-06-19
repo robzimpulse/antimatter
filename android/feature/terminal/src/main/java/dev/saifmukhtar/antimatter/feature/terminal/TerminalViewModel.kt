@@ -29,6 +29,9 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import java.util.UUID
 
+import kotlinx.coroutines.FlowPreview
+
+@OptIn(FlowPreview::class)
 @HiltViewModel
 class TerminalViewModel @Inject constructor(
     private val webSocket: BridgeWebSocket,

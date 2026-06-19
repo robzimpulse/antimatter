@@ -1,9 +1,13 @@
 # Android App Changelog
 
-## [1.1.0] - Unreleased
+## [2.0.0] - 2026-06-19
 ### Added
 - Multi-adapter support: UI to select between active integrations (AG, AG2, CC) during the connection phase.
 - Thought Process Streaming improvements to correctly index `plannerResponse` and `text` streams.
+
+### Fixed
+- History Leakage bug (BUG-015): `ChatViewModel` now properly filters `HISTORY_LIST` by `agentId` to prevent history corruption across adapters.
+- Step Crosstalk bug (BUG-018): `STEP` messages are now correctly scoped to the active `agentId` and `conversationId`.
 
 ## [1.0.0] - 2026-06-10
 ### Added

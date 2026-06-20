@@ -1,19 +1,20 @@
 # 🔄 CI/CD WORKFLOW DASHBOARD
 
-![Pass Rate](https://img.shields.io/badge/Pass%20Rate-70%25-brightgreen)
-![Total Runs](https://img.shields.io/badge/Total%20Runs-110-blue)
+![Pass Rate](https://img.shields.io/badge/Pass%20Rate-71%25-brightgreen)
+![Total Runs](https://img.shields.io/badge/Total%20Runs-111-blue)
 
 | Metric | Count |
 |--------|-------|
-| **Total Runs** | 110 |
-| **Passed** | 78 |
+| **Total Runs** | 111 |
+| **Passed** | 79 |
 | **Failed** | 29 |
-| **Pass Rate** | 70% |
+| **Pass Rate** | 71% |
 
 ## Recent Runs
 
 | Date (UTC) | Workflow | Status | Commit | URL |
 |------------|----------|--------|--------|-----|
+| 2026-06-20 12:21 | Core CI | ✅ PASS | docs: set Decentralized P2P DHT architecture as In Progress | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27871026952) |
 | 2026-06-20 12:11 | Android CI | ✅ PASS | docs: add Tailscale to connectivity roadmap | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27870748395) |
 | 2026-06-20 12:10 | Adapters CI | ✅ PASS | docs: add Tailscale to connectivity roadmap | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27870748400) |
 | 2026-06-20 12:10 | iOS CI | ✅ PASS | docs: add Tailscale to connectivity roadmap | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27870748399) |
@@ -63,4 +64,3 @@
 | 2026-06-17 08:38 | Android CI | ❌ FAIL | chore(deps): bump astro @astrojs/starlight and @astrojs/starlight-tailwind | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27676403054) |
 | 2026-06-17 08:36 | Android CI | ❌ FAIL | Chore: Added proper license and deleted unused files | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27676314112) |
 | 2026-06-17 08:35 | Adapters CI | ✅ PASS | chore(deps): bump astro @astrojs/starlight and @astrojs/starlight-tailwind | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27676403146) |
-| 2026-06-17 08:35 | Core CI | ✅ PASS | chore(deps): bump astro @astrojs/starlight and @astrojs/starlight-tailwind | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27676402977) |

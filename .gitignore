@@ -30,3 +30,7 @@ pip-delete-this-directory.txt
 # VSIX / Extension Manifests
 *.vsix
 extension.vsixmanifest
+
+# Auto-generated docs
+docs/src/content/docs/testing-status.md
+docs/src/content/docs/roadmap.mdx

@@ -1,12 +1,12 @@
 # 🔄 CI/CD WORKFLOW DASHBOARD
 
 ![Pass Rate](https://img.shields.io/badge/Pass%20Rate-69%25-brightgreen)
-![Total Runs](https://img.shields.io/badge/Total%20Runs-105-blue)
+![Total Runs](https://img.shields.io/badge/Total%20Runs-106-blue)
 
 | Metric | Count |
 |--------|-------|
-| **Total Runs** | 105 |
-| **Passed** | 73 |
+| **Total Runs** | 106 |
+| **Passed** | 74 |
 | **Failed** | 29 |
 | **Pass Rate** | 69% |
 
@@ -14,6 +14,7 @@
 
 | Date (UTC) | Workflow | Status | Commit | URL |
 |------------|----------|--------|--------|-----|
+| 2026-06-20 12:04 | Adapters CI | ✅ PASS | docs: add decentralized connectivity architectures to roadmap | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27870617407) |
 | 2026-06-20 12:04 | iOS CI | ✅ PASS | docs: add decentralized connectivity architectures to roadmap | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27870617402) |
 | 2026-06-20 11:45 | Android CI | ✅ PASS | chore(deps): bump pydantic-settings in /adapters/ag2 | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27870138572) |
 | 2026-06-20 11:44 | Adapters CI | ✅ PASS | chore(deps): bump pydantic-settings in /adapters/ag2 | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27870138561) |
@@ -63,4 +64,3 @@
 | 2026-06-17 08:34 | npm_and_yarn in /docs for esbuild - Update #1418669298 | ❌ FAIL | Chore: Added proper license and deleted unused files | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27676328903) |
 | 2026-06-17 08:33 | Core CI | ✅ PASS | Chore: Added proper license and deleted unused files | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27676315771) |
 | 2026-06-17 08:33 | iOS CI | ✅ PASS | Chore: Added proper license and deleted unused files | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27676314040) |
-| 2026-06-16 12:26 | Android CI | ✅ PASS | added new documenattion | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27617160728) |

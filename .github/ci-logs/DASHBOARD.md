@@ -1,19 +1,20 @@
 # 🔄 CI/CD WORKFLOW DASHBOARD
 
-![Pass Rate](https://img.shields.io/badge/Pass%20Rate-69%25-brightgreen)
-![Total Runs](https://img.shields.io/badge/Total%20Runs-106-blue)
+![Pass Rate](https://img.shields.io/badge/Pass%20Rate-70%25-brightgreen)
+![Total Runs](https://img.shields.io/badge/Total%20Runs-107-blue)
 
 | Metric | Count |
 |--------|-------|
-| **Total Runs** | 106 |
-| **Passed** | 74 |
+| **Total Runs** | 107 |
+| **Passed** | 75 |
 | **Failed** | 29 |
-| **Pass Rate** | 69% |
+| **Pass Rate** | 70% |
 
 ## Recent Runs
 
 | Date (UTC) | Workflow | Status | Commit | URL |
 |------------|----------|--------|--------|-----|
+| 2026-06-20 12:05 | Android CI | ✅ PASS | docs: add decentralized connectivity architectures to roadmap | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27870617408) |
 | 2026-06-20 12:04 | Adapters CI | ✅ PASS | docs: add decentralized connectivity architectures to roadmap | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27870617407) |
 | 2026-06-20 12:04 | iOS CI | ✅ PASS | docs: add decentralized connectivity architectures to roadmap | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27870617402) |
 | 2026-06-20 11:45 | Android CI | ✅ PASS | chore(deps): bump pydantic-settings in /adapters/ag2 | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27870138572) |
@@ -63,4 +64,3 @@
 | 2026-06-17 08:35 | npm_and_yarn in /docs for astro - Update #1418668986 | ✅ PASS | Chore: Added proper license and deleted unused files | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27676324662) |
 | 2026-06-17 08:34 | npm_and_yarn in /docs for esbuild - Update #1418669298 | ❌ FAIL | Chore: Added proper license and deleted unused files | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27676328903) |
 | 2026-06-17 08:33 | Core CI | ✅ PASS | Chore: Added proper license and deleted unused files | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27676315771) |
-| 2026-06-17 08:33 | iOS CI | ✅ PASS | Chore: Added proper license and deleted unused files | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27676314040) |

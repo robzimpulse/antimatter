@@ -28,6 +28,7 @@ Planned features and architectural improvements for the Antimatter ecosystem. It
 | Feature | Status | Notes |
 |---|---|---|
 | Independent Adapter Model | <span class="badge badge-shipped">✓ Shipped</span> | Gateway + lightweight adapters |
+| Decentralized P2P DHT (Hyperswarm) | <span class="badge badge-wip">⟳ In Progress</span> | 100% serverless NAT hole-punching via public DHT (ENS-style routing) |
 | Persistent SSH Tunnels (e.g. localhost.run) | <span class="badge badge-planned">◦ Planned</span> | Zero-setup persistent URLs via SSH keys for 100% free decentralized routing |
 | Tor Hidden Services (.onion addresses) | <span class="badge badge-planned">◦ Planned</span> | Ultimate "no central authority" fully local P2P connectivity architecture |
 | Tailscale Mesh Network | <span class="badge badge-planned">◦ Planned</span> | Zero-config remote access utilizing secure WireGuard VPN mesh |

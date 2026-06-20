@@ -97,3 +97,4 @@ Date,Workflow,Status,Commit,URL
 2026-06-20 11:27,iOS CI,✅ PASS,chore(docs): clean up duplicate testing-status file and ignore auto-generated docs,https://github.com/saifmukhtar/antimatter/actions/runs/27869748577
 2026-06-20 11:27,Core CI,✅ PASS,Merge pull request #4 from saifmukhtar/dependabot/npm_and_yarn/docs/multi-470afd2faf,https://github.com/saifmukhtar/antimatter/actions/runs/27869765754
 2026-06-20 11:28,Adapters CI,✅ PASS,Merge pull request #4 from saifmukhtar/dependabot/npm_and_yarn/docs/multi-470afd2faf,https://github.com/saifmukhtar/antimatter/actions/runs/27869765732
+2026-06-20 11:28,Android CI,✅ PASS,chore(docs): clean up duplicate testing-status file and ignore auto-generated docs,https://github.com/saifmukhtar/antimatter/actions/runs/27869748598

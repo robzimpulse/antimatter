@@ -1,12 +1,12 @@
 # 🔄 CI/CD WORKFLOW DASHBOARD
 
 ![Pass Rate](https://img.shields.io/badge/Pass%20Rate-68%25-brightgreen)
-![Total Runs](https://img.shields.io/badge/Total%20Runs-98-blue)
+![Total Runs](https://img.shields.io/badge/Total%20Runs-99-blue)
 
 | Metric | Count |
 |--------|-------|
-| **Total Runs** | 98 |
-| **Passed** | 67 |
+| **Total Runs** | 99 |
+| **Passed** | 68 |
 | **Failed** | 28 |
 | **Pass Rate** | 68% |
 
@@ -14,6 +14,7 @@
 
 | Date (UTC) | Workflow | Status | Commit | URL |
 |------------|----------|--------|--------|-----|
+| 2026-06-20 11:28 | Android CI | ✅ PASS | chore(docs): clean up duplicate testing-status file and ignore auto-generated docs | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27869748598) |
 | 2026-06-20 11:28 | Adapters CI | ✅ PASS | Merge pull request #4 from saifmukhtar/dependabot/npm_and_yarn/docs/multi-470afd2faf | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27869765732) |
 | 2026-06-20 11:27 | Core CI | ✅ PASS | Merge pull request #4 from saifmukhtar/dependabot/npm_and_yarn/docs/multi-470afd2faf | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27869765754) |
 | 2026-06-20 11:27 | iOS CI | ✅ PASS | chore(docs): clean up duplicate testing-status file and ignore auto-generated docs | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27869748577) |
@@ -63,4 +64,3 @@
 | 2026-06-15 22:46 | iOS CI | ✅ PASS | build: force js-yaml update to v4.2.0 via overrides to fix dependabot vulnerability alert | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27581377524) |
 | 2026-06-15 22:46 | CodeQL Advanced | ✅ PASS | Merge pull request #3 from saifmukhtar/dependabot/npm_and_yarn/adapters/ag/form-data-4.0.6 | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27580907050) |
 | 2026-06-15 22:39 | Android CI | ✅ PASS | docs: integrate custom logo Mermaid diagram support and update feature highlights | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27581014177) |
-| 2026-06-15 22:39 | npm_and_yarn in /adapters/ag for js-yaml - Update #1414813015 | ❌ FAIL | chore: update workflow dashboard | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27581033614) |

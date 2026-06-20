@@ -320,3 +320,20 @@ This document tracks the current testing status of the Antimatter ecosystem, out
 ## Reporting Issues
 
 Community testing is vital! If you test these features and find any unexpected behavior, or if you manage to test the untried features (especially on iOS), it is highly encouraged to report the issues. Your feedback helps stabilize Antimatter!
+
+---
+
+## Architectural Logs & Decisions
+
+### DECISION-001 — Connectivity & Global Naming (Zooko's Triangle)
+
+- **Date**: 2026-06-20
+- **Context**: Explored methods to completely remove third-party tunnel dependencies (like Cloudflare, Ngrok, Tailscale) and create a 100% decentralized, zero-setup connection between the Antimatter Gateway and the Android App.
+- **The Ideal Vision**: A system where the user chooses a global username (e.g., `saif`), broadcasts it peer-to-peer, and connects seamlessly without any central server or crypto gas fees.
+- **The Constraint (Zooko's Triangle)**: We discovered it is mathematically impossible to have global unique human-readable names + decentralization without implementing **Sybil Resistance** (which requires either a central authority like GitHub/Google, or an economic cost like Ethereum gas fees).
+- **The Failed Approach**: Considered a "Central Spreadsheet" (e.g., a free GitHub repo) to register usernames. This was rejected because (a) it violates the Cypherpunk ethos by introducing a central supervisor (us), and (b) it is highly vulnerable to bot-spam registering all usernames.
+- **The Workaround (Current Implementation)**:
+  1. **Decentralized P2P DHT**: The Gateway generates a long cryptographic Public Key (e.g., `hyper://abc123xyz`) and broadcasts its IP to a public Distributed Hash Table (like Hyperswarm or BitTorrent Mainline). This acts as a decentralized NAT hole-punch.
+  2. **QR Code OTP**: The QR code embeds both the DHT Public Key AND a highly secure One-Time Password (OTP) or AES Key.
+  3. **Local Petnames**: The Android app scans the QR code, securely queries the DHT, authenticates the connection using the OTP to prevent MITM spoofing, and allows the user to save it locally with a human-readable "Petname" (e.g., `"My MacBook"`).
+- **Conclusion**: We abandoned the "Global Username" dream for Antimatter as it belongs to a separate unproven moonshot project. We successfully solved the core routing problem using pure P2P DHT + QR code verification.

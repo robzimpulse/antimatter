@@ -72,6 +72,12 @@ Planned features and architectural improvements for the Antimatter ecosystem. It
 | Android Wear companion | <span class="badge badge-planned">◦ Planned</span> | Quick status + approve on Wear OS |
 | macOS Menu Bar App | <span class="badge badge-planned">◦ Planned</span> | Native macOS client using Catalyst |
 
+## Research & Moonshots
+
+| Feature | Status | Notes |
+|---|---|---|
+| Decentralized Global Usernames | <span class="badge badge-planned">◦ Planned</span> | Solve Zooko's Triangle without requiring crypto fees or a central server |
+
 ## Developer Experience
 
 | Feature | Status | Notes |

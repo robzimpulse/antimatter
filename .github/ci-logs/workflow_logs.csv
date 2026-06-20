@@ -108,3 +108,4 @@ Date,Workflow,Status,Commit,URL
 2026-06-20 12:05,Android CI,✅ PASS,docs: add decentralized connectivity architectures to roadmap,https://github.com/saifmukhtar/antimatter/actions/runs/27870617408
 2026-06-20 12:10,iOS CI,✅ PASS,docs: add Tailscale to connectivity roadmap,https://github.com/saifmukhtar/antimatter/actions/runs/27870748399
 2026-06-20 12:10,Adapters CI,✅ PASS,docs: add Tailscale to connectivity roadmap,https://github.com/saifmukhtar/antimatter/actions/runs/27870748400
+2026-06-20 12:11,Android CI,✅ PASS,docs: add Tailscale to connectivity roadmap,https://github.com/saifmukhtar/antimatter/actions/runs/27870748395

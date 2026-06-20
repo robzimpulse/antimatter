@@ -28,6 +28,8 @@ Planned features and architectural improvements for the Antimatter ecosystem. It
 | Feature | Status | Notes |
 |---|---|---|
 | Independent Adapter Model | <span class="badge badge-shipped">✓ Shipped</span> | Gateway + lightweight adapters |
+| Persistent SSH Tunnels (e.g. localhost.run) | <span class="badge badge-planned">◦ Planned</span> | Zero-setup persistent URLs via SSH keys for 100% free decentralized routing |
+| Tor Hidden Services (.onion addresses) | <span class="badge badge-planned">◦ Planned</span> | Ultimate "no central authority" fully local P2P connectivity architecture |
 | End-to-End Encryption (E2EE) | <span class="badge badge-shipped">✓ Shipped</span> | DH key exchange + AES-GCM |
 | Biometric Authentication Gate | <span class="badge badge-shipped">✓ Shipped</span> | Fingerprint / Face ID / Face Unlock |
 | Cloudflare Zero Trust support | <span class="badge badge-shipped">✓ Shipped</span> | Optional enterprise persistent tunnels |

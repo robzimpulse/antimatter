@@ -1,19 +1,20 @@
 # 🔄 CI/CD WORKFLOW DASHBOARD
 
-![Pass Rate](https://img.shields.io/badge/Pass%20Rate-69%25-brightgreen)
-![Total Runs](https://img.shields.io/badge/Total%20Runs-100-blue)
+![Pass Rate](https://img.shields.io/badge/Pass%20Rate-68%25-brightgreen)
+![Total Runs](https://img.shields.io/badge/Total%20Runs-101-blue)
 
 | Metric | Count |
 |--------|-------|
-| **Total Runs** | 100 |
+| **Total Runs** | 101 |
 | **Passed** | 69 |
-| **Failed** | 28 |
-| **Pass Rate** | 69% |
+| **Failed** | 29 |
+| **Pass Rate** | 68% |
 
 ## Recent Runs
 
 | Date (UTC) | Workflow | Status | Commit | URL |
 |------------|----------|--------|--------|-----|
+| 2026-06-20 11:43 | npm_and_yarn in /docs for esbuild - Update #1425075984 | ❌ FAIL | chore: update workflow dashboard | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27870112875) |
 | 2026-06-20 11:29 | Android CI | ✅ PASS | Merge pull request #4 from saifmukhtar/dependabot/npm_and_yarn/docs/multi-470afd2faf | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27869765745) |
 | 2026-06-20 11:28 | Android CI | ✅ PASS | chore(docs): clean up duplicate testing-status file and ignore auto-generated docs | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27869748598) |
 | 2026-06-20 11:28 | Adapters CI | ✅ PASS | Merge pull request #4 from saifmukhtar/dependabot/npm_and_yarn/docs/multi-470afd2faf | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27869765732) |
@@ -63,4 +64,3 @@
 | 2026-06-15 22:48 | Android CI | ✅ PASS | build: force js-yaml update to v4.2.0 via overrides to fix dependabot vulnerability alert | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27581377503) |
 | 2026-06-15 22:46 | Adapters CI | ✅ PASS | build: force js-yaml update to v4.2.0 via overrides to fix dependabot vulnerability alert | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27581377512) |
 | 2026-06-15 22:46 | iOS CI | ✅ PASS | build: force js-yaml update to v4.2.0 via overrides to fix dependabot vulnerability alert | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27581377524) |
-| 2026-06-15 22:46 | CodeQL Advanced | ✅ PASS | Merge pull request #3 from saifmukhtar/dependabot/npm_and_yarn/adapters/ag/form-data-4.0.6 | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27580907050) |

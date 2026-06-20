@@ -1,12 +1,12 @@
 # 🔄 CI/CD WORKFLOW DASHBOARD
 
 ![Pass Rate](https://img.shields.io/badge/Pass%20Rate-65%25-brightgreen)
-![Total Runs](https://img.shields.io/badge/Total%20Runs-90-blue)
+![Total Runs](https://img.shields.io/badge/Total%20Runs-91-blue)
 
 | Metric | Count |
 |--------|-------|
-| **Total Runs** | 90 |
-| **Passed** | 59 |
+| **Total Runs** | 91 |
+| **Passed** | 60 |
 | **Failed** | 28 |
 | **Pass Rate** | 65% |
 
@@ -14,6 +14,7 @@
 
 | Date (UTC) | Workflow | Status | Commit | URL |
 |------------|----------|--------|--------|-----|
+| 2026-06-20 07:40 | Adapters CI | ✅ PASS | Include Star History in README | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27864535145) |
 | 2026-06-20 07:40 | Core CI | ✅ PASS | Include Star History in README | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27864535138) |
 | 2026-06-19 20:28 | Deploy Docs to Cloudflare Pages | ✅ PASS | chore: update workflow dashboard | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27846984790) |
 | 2026-06-19 20:21 | Android CI | ✅ PASS | test(connect): fix NullPointerException in ConnectionViewModelTest | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27846409856) |
@@ -63,4 +64,3 @@
 | 2026-06-15 22:35 | iOS CI | ✅ PASS | Merge pull request #3 from saifmukhtar/dependabot/npm_and_yarn/adapters/ag/form-data-4.0.6 | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27580907075) |
 | 2026-06-15 22:31 | CodeQL Advanced | ✅ PASS | feat: implement native PTY terminal for iOS Android and Gateway | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27580233296) |
 | 2026-06-15 22:30 | Android CI | ✅ PASS | feat: implement native PTY terminal for iOS Android and Gateway | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27580233486) |
-| 2026-06-15 22:23 | npm_and_yarn in /adapters/ag for js-yaml - Update #1414775372 | ❌ FAIL | chore: update workflow dashboard | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27580281687) |

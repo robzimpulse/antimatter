@@ -89,3 +89,4 @@ Date,Workflow,Status,Commit,URL
 2026-06-19 20:21,Android CI,✅ PASS,test(connect): fix NullPointerException in ConnectionViewModelTest,https://github.com/saifmukhtar/antimatter/actions/runs/27846409856
 2026-06-19 20:28,Deploy Docs to Cloudflare Pages,✅ PASS,chore: update workflow dashboard,https://github.com/saifmukhtar/antimatter/actions/runs/27846984790
 2026-06-20 07:40,Core CI,✅ PASS,Include Star History in README,https://github.com/saifmukhtar/antimatter/actions/runs/27864535138
+2026-06-20 07:40,Adapters CI,✅ PASS,Include Star History in README,https://github.com/saifmukhtar/antimatter/actions/runs/27864535145

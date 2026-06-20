@@ -1,12 +1,12 @@
 # 🔄 CI/CD WORKFLOW DASHBOARD
 
 ![Pass Rate](https://img.shields.io/badge/Pass%20Rate-70%25-brightgreen)
-![Total Runs](https://img.shields.io/badge/Total%20Runs-108-blue)
+![Total Runs](https://img.shields.io/badge/Total%20Runs-109-blue)
 
 | Metric | Count |
 |--------|-------|
-| **Total Runs** | 108 |
-| **Passed** | 76 |
+| **Total Runs** | 109 |
+| **Passed** | 77 |
 | **Failed** | 29 |
 | **Pass Rate** | 70% |
 
@@ -14,6 +14,7 @@
 
 | Date (UTC) | Workflow | Status | Commit | URL |
 |------------|----------|--------|--------|-----|
+| 2026-06-20 12:10 | Adapters CI | ✅ PASS | docs: add Tailscale to connectivity roadmap | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27870748400) |
 | 2026-06-20 12:10 | iOS CI | ✅ PASS | docs: add Tailscale to connectivity roadmap | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27870748399) |
 | 2026-06-20 12:05 | Android CI | ✅ PASS | docs: add decentralized connectivity architectures to roadmap | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27870617408) |
 | 2026-06-20 12:04 | Adapters CI | ✅ PASS | docs: add decentralized connectivity architectures to roadmap | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27870617407) |
@@ -63,4 +64,3 @@
 | 2026-06-17 08:35 | Adapters CI | ✅ PASS | chore(deps): bump astro @astrojs/starlight and @astrojs/starlight-tailwind | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27676403146) |
 | 2026-06-17 08:35 | Core CI | ✅ PASS | chore(deps): bump astro @astrojs/starlight and @astrojs/starlight-tailwind | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27676402977) |
 | 2026-06-17 08:35 | npm_and_yarn in /docs for astro - Update #1418668986 | ✅ PASS | Chore: Added proper license and deleted unused files | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27676324662) |
-| 2026-06-17 08:34 | npm_and_yarn in /docs for esbuild - Update #1418669298 | ❌ FAIL | Chore: Added proper license and deleted unused files | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27676328903) |

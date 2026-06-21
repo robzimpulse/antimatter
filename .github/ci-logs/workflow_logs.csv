@@ -112,3 +112,4 @@ Date,Workflow,Status,Commit,URL
 2026-06-20 12:21,Core CI,✅ PASS,docs: set Decentralized P2P DHT architecture as In Progress,https://github.com/saifmukhtar/antimatter/actions/runs/27871026952
 2026-06-20 12:23,Android CI,✅ PASS,docs: set Decentralized P2P DHT architecture as In Progress,https://github.com/saifmukhtar/antimatter/actions/runs/27871026940
 2026-06-21 06:09,iOS CI,✅ PASS,docs: add architectural logs for Zookos Triangle and connectivity decisions,https://github.com/saifmukhtar/antimatter/actions/runs/27895569271
+2026-06-21 06:09,Adapters CI,✅ PASS,docs: add architectural logs for Zookos Triangle and connectivity decisions,https://github.com/saifmukhtar/antimatter/actions/runs/27895569277

@@ -1,12 +1,12 @@
 # 🔄 CI/CD WORKFLOW DASHBOARD
 
 ![Pass Rate](https://img.shields.io/badge/Pass%20Rate-71%25-brightgreen)
-![Total Runs](https://img.shields.io/badge/Total%20Runs-113-blue)
+![Total Runs](https://img.shields.io/badge/Total%20Runs-114-blue)
 
 | Metric | Count |
 |--------|-------|
-| **Total Runs** | 113 |
-| **Passed** | 81 |
+| **Total Runs** | 114 |
+| **Passed** | 82 |
 | **Failed** | 29 |
 | **Pass Rate** | 71% |
 
@@ -14,6 +14,7 @@
 
 | Date (UTC) | Workflow | Status | Commit | URL |
 |------------|----------|--------|--------|-----|
+| 2026-06-21 06:09 | Adapters CI | ✅ PASS | docs: add architectural logs for Zookos Triangle and connectivity decisions | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27895569277) |
 | 2026-06-21 06:09 | iOS CI | ✅ PASS | docs: add architectural logs for Zookos Triangle and connectivity decisions | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27895569271) |
 | 2026-06-20 12:23 | Android CI | ✅ PASS | docs: set Decentralized P2P DHT architecture as In Progress | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27871026940) |
 | 2026-06-20 12:21 | Core CI | ✅ PASS | docs: set Decentralized P2P DHT architecture as In Progress | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27871026952) |
@@ -63,4 +64,3 @@
 | 2026-06-18 20:09 | Adapters CI | ❌ FAIL | Chore: Adding leftover files | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27786288704) |
 | 2026-06-18 20:09 | iOS CI | ✅ PASS | Chore: Adding leftover files | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27786288660) |
 | 2026-06-17 08:48 | Deploy Docs to Cloudflare Pages | ✅ PASS | chore: update workflow dashboard | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27677072696) |
-| 2026-06-17 08:38 | Android CI | ❌ FAIL | chore(deps): bump astro @astrojs/starlight and @astrojs/starlight-tailwind | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27676403054) |

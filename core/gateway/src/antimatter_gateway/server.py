@@ -19,7 +19,8 @@ from .router import MessageRouter
 logger = logging.getLogger(__name__)
 
 # IPC token file — readable only by the owning user (0o600)
-IPC_TOKEN_PATH = Path(os.path.expanduser("~/.antimatter_daemon/.ipc_token"))
+HOME_DAEMON_PATH = Path.home() / ".antimatter_daemon"
+IPC_TOKEN_PATH = HOME_DAEMON_PATH / ".ipc_token"
 
 # Rate Limiting
 _ip_failure_counts: dict[str, dict] = {}
@@ -260,9 +261,9 @@ def daemonize(log_path: Path, pid_path: Path):
     sys.stdout.flush()
     sys.stderr.flush()
 
-    with open("/home/saif/.antimatter_daemon/gateway.log", "r") as f:
+    with open(f"{HOME_DAEMON_PATH}/gateway.log", "r") as f:
         os.dup2(f.fileno(), sys.stdin.fileno())
-    with open("/home/saif/.antimatter_daemon/gateway.log", "a+") as f:
+    with open(f"{HOME_DAEMON_PATH}/gateway.log", "a+") as f:
         os.dup2(f.fileno(), sys.stdout.fileno())
         os.dup2(f.fileno(), sys.stderr.fileno())
 

@@ -1,19 +1,20 @@
 # 🔄 CI/CD WORKFLOW DASHBOARD
 
-![Pass Rate](https://img.shields.io/badge/Pass%20Rate-72%25-brightgreen)
-![Total Runs](https://img.shields.io/badge/Total%20Runs-118-blue)
+![Pass Rate](https://img.shields.io/badge/Pass%20Rate-73%25-brightgreen)
+![Total Runs](https://img.shields.io/badge/Total%20Runs-119-blue)
 
 | Metric | Count |
 |--------|-------|
-| **Total Runs** | 118 |
-| **Passed** | 86 |
+| **Total Runs** | 119 |
+| **Passed** | 87 |
 | **Failed** | 29 |
-| **Pass Rate** | 72% |
+| **Pass Rate** | 73% |
 
 ## Recent Runs
 
 | Date (UTC) | Workflow | Status | Commit | URL |
 |------------|----------|--------|--------|-----|
+| 2026-06-23 06:58 | Adapters CI | ✅ PASS | Merge pull request #11 from martofeld/patch-1 | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/28008236471) |
 | 2026-06-23 06:57 | iOS CI | ✅ PASS | Merge pull request #11 from martofeld/patch-1 | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/28008236511) |
 | 2026-06-23 06:56 | Adapters CI | ✅ PASS | Update server.py | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27987537437) |
 | 2026-06-23 06:56 | iOS CI | ✅ PASS | Update server.py | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27987537519) |
@@ -63,4 +64,3 @@
 | 2026-06-18 20:11 | Android CI | ❌ FAIL | Chore: Adding leftover files | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27786288633) |
 | 2026-06-18 20:11 | iOS CI | ✅ PASS | chore(deps-dev): bump undici from 7.27.2 to 7.28.0 in /adapters/ag | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27786398715) |
 | 2026-06-18 20:10 | npm_and_yarn in /docs for esbuild - Update #1421784205 | ❌ FAIL | chore: update workflow dashboard | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27786348853) |
-| 2026-06-18 20:10 | uv in /adapters/ag2 for pytest - Update #1421784177 | ❌ FAIL | chore: update workflow dashboard | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27786346865) |

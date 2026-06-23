@@ -1,0 +1,42 @@
+name: Publish to PyPI
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Directory of the package to build and publish'
+        required: true
+        type: choice
+        options:
+          - core/gateway
+          - adapters/ag2
+          - core/shared-config
+          - core/shared-crypto
+          - core/shared-protocol
+          - core/shared-fs
+
+jobs:
+  publish:
+    name: Build and Publish
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        
+    - name: Install uv
+      run: curl -LsSf https://astral.sh/uv/install.sh | sh
+      
+    - name: Build Package
+      working-directory: ${{ github.event.inputs.target }}
+      run: uv build --out-dir pypi_dist
+      
+    - name: Publish Package
+      working-directory: ${{ github.event.inputs.target }}
+      env:
+        UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+      run: uv publish pypi_dist/*

@@ -260,18 +260,20 @@ def daemonize(log_path: Path, pid_path: Path):
     sys.stdout.flush()
     sys.stderr.flush()
 
-    with open("/home/saif/.antimatter_daemon/gateway.log", "r") as f:
-        os.dup2(f.fileno(), sys.stdin.fileno())
-    with open("/home/saif/.antimatter_daemon/gateway.log", "a+") as f:
-        os.dup2(f.fileno(), sys.stdout.fileno())
-        os.dup2(f.fileno(), sys.stderr.fileno())
-
     # Write PID
     pid_path.parent.mkdir(parents=True, exist_ok=True)
     pid_path.write_text(str(os.getpid()))
 
     # Setup file logging
     log_path.parent.mkdir(parents=True, exist_ok=True)
+    
+    with open(log_path, "a+") as f:
+        f.seek(0)
+        os.dup2(f.fileno(), sys.stdin.fileno())
+        
+        os.dup2(f.fileno(), sys.stdout.fileno())
+        os.dup2(f.fileno(), sys.stderr.fileno())
+    
     handler = logging.handlers.RotatingFileHandler(
         log_path, maxBytes=5 * 1024 * 1024, backupCount=3
     )

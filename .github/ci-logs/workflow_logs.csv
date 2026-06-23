@@ -124,3 +124,4 @@ Date,Workflow,Status,Commit,URL
 2026-06-23 07:02,Android CI,✅ PASS,Merge pull request #10 from saifmukhtar/dependabot/uv/adapters/ag2/pydantic-settings-2.14.2,https://github.com/saifmukhtar/antimatter/actions/runs/28008380116
 2026-06-23 07:04,Core CI,✅ PASS,chore: bump antimatter-gateway version to 2.0.5,https://github.com/saifmukhtar/antimatter/actions/runs/28008564512
 2026-06-23 07:04,Adapters CI,✅ PASS,chore: bump antimatter-gateway version to 2.0.5,https://github.com/saifmukhtar/antimatter/actions/runs/28008564673
+2026-06-23 07:06,Android CI,✅ PASS,chore: bump antimatter-gateway version to 2.0.5,https://github.com/saifmukhtar/antimatter/actions/runs/28008563830

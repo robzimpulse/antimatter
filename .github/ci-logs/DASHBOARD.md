@@ -1,12 +1,12 @@
 # 🔄 CI/CD WORKFLOW DASHBOARD
 
 ![Pass Rate](https://img.shields.io/badge/Pass%20Rate-73%25-brightgreen)
-![Total Runs](https://img.shields.io/badge/Total%20Runs-121-blue)
+![Total Runs](https://img.shields.io/badge/Total%20Runs-122-blue)
 
 | Metric | Count |
 |--------|-------|
-| **Total Runs** | 121 |
-| **Passed** | 89 |
+| **Total Runs** | 122 |
+| **Passed** | 90 |
 | **Failed** | 29 |
 | **Pass Rate** | 73% |
 
@@ -14,6 +14,7 @@
 
 | Date (UTC) | Workflow | Status | Commit | URL |
 |------------|----------|--------|--------|-----|
+| 2026-06-23 07:01 | Graph Update: uv in /adapters/ag2 #1431117364 | ✅ PASS | Merge pull request #10 from saifmukhtar/dependabot/uv/adapters/ag2/pydantic-settings-2.14.2 | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/28008383150) |
 | 2026-06-23 07:00 | iOS CI | ✅ PASS | Merge pull request #10 from saifmukhtar/dependabot/uv/adapters/ag2/pydantic-settings-2.14.2 | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/28008380102) |
 | 2026-06-23 06:59 | Android CI | ✅ PASS | Merge pull request #11 from martofeld/patch-1 | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/28008236459) |
 | 2026-06-23 06:58 | Adapters CI | ✅ PASS | Merge pull request #11 from martofeld/patch-1 | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/28008236471) |
@@ -63,4 +64,3 @@
 | 2026-06-19 20:04 | Core CI | ✅ PASS | chore: update root config and documentation | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27846058475) |
 | 2026-06-19 04:05 | Deploy Docs to Cloudflare Pages | ✅ PASS | chore: update workflow dashboard | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27804635525) |
 | 2026-06-18 20:13 | Android CI | ❌ FAIL | chore(deps-dev): bump undici from 7.27.2 to 7.28.0 in /adapters/ag | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27786398876) |
-| 2026-06-18 20:11 | Android CI | ❌ FAIL | Chore: Adding leftover files | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27786288633) |

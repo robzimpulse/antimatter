@@ -1,19 +1,20 @@
 # 🔄 CI/CD WORKFLOW DASHBOARD
 
-![Pass Rate](https://img.shields.io/badge/Pass%20Rate-74%25-brightgreen)
-![Total Runs](https://img.shields.io/badge/Total%20Runs-127-blue)
+![Pass Rate](https://img.shields.io/badge/Pass%20Rate-75%25-brightgreen)
+![Total Runs](https://img.shields.io/badge/Total%20Runs-128-blue)
 
 | Metric | Count |
 |--------|-------|
-| **Total Runs** | 127 |
-| **Passed** | 95 |
+| **Total Runs** | 128 |
+| **Passed** | 96 |
 | **Failed** | 29 |
-| **Pass Rate** | 74% |
+| **Pass Rate** | 75% |
 
 ## Recent Runs
 
 | Date (UTC) | Workflow | Status | Commit | URL |
 |------------|----------|--------|--------|-----|
+| 2026-06-23 07:14 | Android CI | ✅ PASS | ci: add manual workflow dispatch for publishing to PyPI | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/28008938656) |
 | 2026-06-23 07:12 | iOS CI | ✅ PASS | ci: add manual workflow dispatch for publishing to PyPI | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/28008938631) |
 | 2026-06-23 07:06 | Android CI | ✅ PASS | chore: bump antimatter-gateway version to 2.0.5 | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/28008563830) |
 | 2026-06-23 07:04 | Adapters CI | ✅ PASS | chore: bump antimatter-gateway version to 2.0.5 | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/28008564673) |
@@ -63,4 +64,3 @@
 | 2026-06-19 20:07 | Adapters CI | ❌ FAIL | chore(deps): bump astro @astrojs/starlight and @astrojs/starlight-tailwind | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27846157721) |
 | 2026-06-19 20:06 | iOS CI | ✅ PASS | chore(deps): bump astro @astrojs/starlight and @astrojs/starlight-tailwind | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27846157693) |
 | 2026-06-19 20:06 | npm_and_yarn in /docs for astro |  @astrojs/starlight |  @astrojs/starlight-tailwind - Update #1423490383 | [View Log](✅ PASS,chore: update workflow dashboard,https://github.com/saifmukhtar/antimatter/actions/runs/27846110645) |
-| 2026-06-19 20:05 | npm_and_yarn in /docs for esbuild - Update #1423490227 | ❌ FAIL | chore: update workflow dashboard | [View Log](https://github.com/saifmukhtar/antimatter/actions/runs/27846102222) |

@@ -126,3 +126,4 @@ Date,Workflow,Status,Commit,URL
 2026-06-23 07:04,Adapters CI,✅ PASS,chore: bump antimatter-gateway version to 2.0.5,https://github.com/saifmukhtar/antimatter/actions/runs/28008564673
 2026-06-23 07:06,Android CI,✅ PASS,chore: bump antimatter-gateway version to 2.0.5,https://github.com/saifmukhtar/antimatter/actions/runs/28008563830
 2026-06-23 07:12,iOS CI,✅ PASS,ci: add manual workflow dispatch for publishing to PyPI,https://github.com/saifmukhtar/antimatter/actions/runs/28008938631
+2026-06-23 07:14,Android CI,✅ PASS,ci: add manual workflow dispatch for publishing to PyPI,https://github.com/saifmukhtar/antimatter/actions/runs/28008938656
